@@ -7,6 +7,7 @@ set(POW_SRC_ROOT ${GLUG_POW_ROOT}/src)
 set(POW_INC_ROOT ${POW_INCLUDE_ROOT}/glug)
 
 set(POW_HEADERS
+    ${POW_INC_ROOT}/power.h
     ${POW_INC_ROOT}/power/power.h
     ${POW_INC_ROOT}/power/battery_status.h
     ${POW_INC_ROOT}/power/power_supply.h
@@ -28,7 +29,7 @@ set(MACOS_SOURCES
 
 set(LINUX_POW_ROOT ${POW_SRC_ROOT}/linux)
 set(LINUX_SOURCES
-
+    ${LINUX_POW_ROOT}/power.cpp
 )
 
 # change compilation rules based on target os

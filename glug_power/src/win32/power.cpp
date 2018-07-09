@@ -48,7 +48,8 @@ long long battery_time()
     SYSTEM_POWER_STATUS ps;
     GetSystemPowerStatus(&ps);
 
-    return ps.BatteryLifeTime;
+    // cast to signed to report a proper -1ll instead of ULONG_MAX
+    return long(ps.BatteryLifeTime);
 }
 
 } // namespace glug
