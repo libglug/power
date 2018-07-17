@@ -24,7 +24,8 @@ set(WIN32_SOURCES
 
 set(MACOS_POW_ROOT ${POW_SRC_ROOT}/macos)
 set(MACOS_SOURCES
-
+    ${MACOS_POW_ROOT}/power.cpp
+    ${MACOS_POW_ROOT}/scoped_cf.hpp
 )
 
 set(LINUX_POW_ROOT ${POW_SRC_ROOT}/linux)
@@ -44,6 +45,9 @@ if(${GLUG_OS_WIN32})
 elseif(${GLUG_OS_MACOS})
 
     add_linux_exports()
+    find_library(APPLE_CF CoreFoundation)
+    find_library(APPLE_IOKIT IOKit)
+    set(EXT_LIBS ${APPLE_CF} ${APPLE_IOKIT})
 
 elseif(${GLUG_OS_LINUX})
 
