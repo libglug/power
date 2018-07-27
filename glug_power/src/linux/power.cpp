@@ -14,9 +14,12 @@ static const std::string power_root("/sys/class/power_supply");
 static const std::string ac_prefix("ACAD");
 static const std::string ac_online_file("online");
 static const std::string batt_prefix("BAT");
+static const std::string batt_status_key("status");
 static const std::string batt_percent_key("capacity");
 static const std::string batt_whour_key("energy_now");
 static const std::string batt_watt_key("power_now");
+static const std::string batt_charging_val("Charging");
+static const std::string batt_charged_val("Full");
 
 static long pow_src_stat(const std::string &pow_src, const std::string &key)
 {
@@ -27,6 +30,16 @@ static long pow_src_stat(const std::string &pow_src, const std::string &key)
     if (stat.rdstate()) return -1;
 
     return val;
+}
+
+static std::string pow_src_string(const std::string &pow_src, const std::string &key)
+{
+    std::ifstream stat(power_root + '/' + pow_src + '/' + key);
+
+    std::string val;
+    std::getline(stat, val);
+
+    return std::move(val);
 }
 
 static size_t battery_count()
@@ -65,26 +78,41 @@ static std::vector<std::string> battery_names()
     return std::move(batteries);
 }
 
+static bool any_charging(const std::vector<std::string> batteries)
+{
+    bool is_charging = false;
+    for (const std::string &battery_name: batteries)
+        is_charging = is_charging || pow_src_string(battery_name, batt_status_key) == batt_charging_val;
+
+    return is_charging;
+}
+
+static bool all_charged(const std::vector<std::string> batteries)
+{
+    bool is_charged = true;
+    for (const std::string &battery_name: batteries)
+        is_charged = is_charged && pow_src_string(battery_name, batt_status_key) == batt_charged_val;
+
+    return is_charged;
+}
+
 power_supply power_state()
 {
     if (pow_src_stat(ac_prefix, ac_online_file) > 0) return ps_ac;
-    if (battery_count() > 0)                     return ps_battery;
+    if (battery_count() > 0)                         return ps_battery;
     return ps_unknown;
 }
 
 battery_status battery_state()
 {
+    std::vector<std::string> batteries = battery_names();
     const bool has_ac = pow_src_stat(ac_prefix, ac_online_file) > 0;
-    const bool has_battery = battery_count > 0;
-    const char charge = battery_pct();
+    const bool has_battery = batteries.size() > 0;
 
-    if (has_ac)
-    {
-        if (charge == 100) return bs_charged;
-        if (has_battery)   return bs_charging;
-        return bs_none;
-    }
-    if (has_battery)  return bs_discharging;
+    if (!has_battery && has_ac)  return bs_none;
+    if (has_battery && !has_ac)  return bs_discharging;
+    if (any_charging(batteries)) return bs_charging;
+    if (all_charged(batteries))  return bs_charged;
     return bs_unknown;
 }
 
