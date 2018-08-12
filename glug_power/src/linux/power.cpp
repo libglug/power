@@ -39,7 +39,7 @@ static std::string pow_src_string(const std::string &pow_src, const std::string 
     std::string val;
     std::getline(stat, val);
 
-    return std::move(val);
+    return val;
 }
 
 static size_t battery_count()
@@ -49,7 +49,7 @@ static size_t battery_count()
     if (!power_dir) return count;
 
     dirent *ent;
-    for (; ent = readdir(power_dir);)
+    for (; (ent = readdir(power_dir));)
     {
         std::string battery_name(ent->d_name);
         if (battery_name.find(batt_prefix) == 0)
@@ -64,10 +64,10 @@ static std::vector<std::string> battery_names()
     std::vector<std::string> batteries;
 
     DIR *power_dir = opendir(power_root.c_str());
-    if (!power_dir) return std::move(batteries);
+    if (!power_dir) return batteries;
 
     dirent *ent;
-    for (; ent = readdir(power_dir);)
+    for (; (ent = readdir(power_dir));)
     {
         std::string battery_name(ent->d_name);
         if (battery_name.find(batt_prefix) != std::string::npos)
@@ -75,7 +75,7 @@ static std::vector<std::string> battery_names()
     }
     closedir(power_dir);
 
-    return std::move(batteries);
+    return batteries;
 }
 
 static bool any_charging(const std::vector<std::string> batteries)
@@ -130,7 +130,7 @@ char battery_pct()
             avg_capacity += capacity;
     }
 
-    return avg_capacity / batteries.size();
+    return static_cast<char>(avg_capacity * 1.0 / batteries.size());
 }
 
 long long battery_time()

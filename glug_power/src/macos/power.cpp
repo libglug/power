@@ -27,7 +27,7 @@ static std::vector<battery_info> get_batteries()
             batteries.emplace_back(reinterpret_cast<CFDictionaryRef>(CFRetain(source)));
     }
 
-    return std::move(batteries);
+    return batteries;
 }
 
 static bool any_charging(std::vector<battery_info> &batteries)
@@ -105,14 +105,14 @@ char battery_pct()
             tot_cap += capacity * 100 / max_capacity;
     }
 
-    return tot_cap / batteries.size();
+    return static_cast<char>(tot_cap * 1.0 / batteries.size());
 }
 
 long long battery_time()
 {
     CFTimeInterval time = IOPSGetTimeRemainingEstimate();
     if (time == kIOPSTimeRemainingUnlimited) time = kIOPSTimeRemainingUnknown;
-    return time;
+    return static_cast<long long>(time);
 }
 
 } // namespace glug
