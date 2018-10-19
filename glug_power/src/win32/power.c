@@ -2,17 +2,14 @@
 #include <glug/power/battery_status.h>
 #include <glug/power/power_supply.h>
 
-#include <windows.h>
-
-namespace glug
-{
+#include <Windows.h>
 
 static const unsigned char bat_ = 1 << 0 | 1 << 1 | 1 << 2;
 static const unsigned char bat_charging = 1 << 3;
 static const unsigned char bat_missing = 1 << 7;
 static const unsigned char bat_unknown = (1 << 8) - 1;
 
-power_supply power_state()
+enum power_supply GLUG_LIB_API power_state()
 {
     SYSTEM_POWER_STATUS ps;
     GetSystemPowerStatus(&ps);
@@ -22,9 +19,8 @@ power_supply power_state()
     return ps_unknown;
 }
 
-battery_status battery_state()
+enum battery_status GLUG_LIB_API battery_state()
 {
-
     SYSTEM_POWER_STATUS ps;
     GetSystemPowerStatus(&ps);
 
@@ -35,21 +31,20 @@ battery_status battery_state()
     return bs_charged;
 }
 
-char battery_pct()
+int8_t GLUG_LIB_API battery_pct()
 {
     SYSTEM_POWER_STATUS ps;
     GetSystemPowerStatus(&ps);
 
-    return ps.BatteryLifePercent;
+    return (int8_t)ps.BatteryLifePercent;
 }
 
-long long battery_time()
+int64_t GLUG_LIB_API battery_time()
 {
     SYSTEM_POWER_STATUS ps;
     GetSystemPowerStatus(&ps);
 
-    // cast to signed to report a proper -1ll instead of ULONG_MAX
-    return long(ps.BatteryLifeTime);
+    // cast to 32bit to report a proper -1ll instead of ULONG_MAX
+    return (int32_t)ps.BatteryLifeTime;
 }
 
-} // namespace glug

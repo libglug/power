@@ -13,24 +13,24 @@ set(POW_HEADERS
     ${POW_INC_ROOT}/power/power_supply.h
 )
 
-set(POW_SOURCES
-)
-
 # set platform sources
 set(WIN32_POW_ROOT ${POW_SRC_ROOT}/win32)
 set(WIN32_SOURCES
-    ${WIN32_POW_ROOT}/power.cpp
+    ${WIN32_POW_ROOT}/power.c
 )
 
 set(MACOS_POW_ROOT ${POW_SRC_ROOT}/macos)
 set(MACOS_SOURCES
-    ${MACOS_POW_ROOT}/power.cpp
-    ${MACOS_POW_ROOT}/scoped_cf.hpp
+    ${MACOS_POW_ROOT}/power.c
+    ${MACOS_POW_ROOT}/battery_node.h
+    ${MACOS_POW_ROOT}/battery_node.c
 )
 
 set(LINUX_POW_ROOT ${POW_SRC_ROOT}/linux)
 set(LINUX_SOURCES
-    ${LINUX_POW_ROOT}/power.cpp
+    ${LINUX_POW_ROOT}/power.c
+    ${LINUX_POW_ROOT}/battery_node.h
+    ${LINUX_POW_ROOT}/battery_node.c
 )
 
 # change compilation rules based on target os
