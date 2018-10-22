@@ -1,21 +1,31 @@
-#include <glug/power/power.h>
+#include "../power_platform.h"
+#include "../battery_platform.h"
+#include "../battery_list.h"
 #include <glug/power/battery_status.h>
 #include <glug/power/power_supply.h>
-#include "battery_node.h"
 
 #include <CoreFoundation/CoreFoundation.h>
 #include <IOKit/ps/IOPowerSources.h>
 #include <IOKit/ps/IOPSKeys.h>
 
-static struct battery_info_node *get_batteries(size_t *count)
+int GLUG_LIB_LOCAL has_ac()
 {
+    const CFTypeRef info = IOPSCopyPowerSourcesInfo();
+    const CFStringRef source = IOPSGetProvidingPowerSourceType(info);
+    int ac = CFStringCompare(source, CFSTR(kIOPMACPowerKey), 0) == 0;
+
+    CFRelease(info);
+    return ac;
+}
+
+struct battery_list GLUG_LIB_LOCAL battery_list()
+{
+    struct battery_list batt_list = { .batteries = NULL, .count = 0 };
     struct battery_info_node batteries, *current;
     const CFTypeRef info = IOPSCopyPowerSourcesInfo();
     const CFArrayRef sources = IOPSCopyPowerSourcesList(info);
     CFIndex i;
-    size_t bat_count = 0;
 
-    batteries.info = NULL;
     batteries.next = NULL;
     current = &batteries;
 
@@ -26,25 +36,38 @@ static struct battery_info_node *get_batteries(size_t *count)
         if (type && !CFStringCompare(type, CFSTR(kIOPSInternalBatteryType), 0))
         {
             current = current->next = create_battery_node(source);
-            bat_count++;
+            ++batt_list.count;
         }
     }
 
-    CFRelease(sources);
     CFRelease(info);
+    CFRelease(sources);
 
-    if (count) *count = bat_count;
-    return batteries.next;
+    batt_list.batteries = batteries.next;
+    return batt_list;
 }
 
-static size_t batteries_charging(const struct battery_info_node *batteries)
+size_t GLUG_LIB_LOCAL battery_count()
+{
+    const CFTypeRef info = IOPSCopyPowerSourcesInfo();
+    const CFArrayRef sources = IOPSCopyPowerSourcesList(info);
+    size_t count = CFArrayGetCount(sources);
+
+    CFRelease(sources);
+    CFRelease(info);
+    return count;
+}
+
+size_t GLUG_LIB_LOCAL batteries_charging(const struct battery_list *batt_list)
 {
     size_t is_charging = 0;
     const struct battery_info_node *current;
 
-    for(current = batteries; !is_charging && current; current = current->next)
+    if (!batt_list) return is_charging;
+
+    for (current = batt_list->batteries; current; current = current->next)
     {
-        CFBooleanRef bat_charging = (CFBooleanRef)CFDictionaryGetValue(current->info, CFSTR(kIOPSIsChargingKey));
+        CFBooleanRef bat_charging = CFDictionaryGetValue(current->info, CFSTR(kIOPSIsChargingKey));
         if (bat_charging && CFBooleanGetValue(bat_charging))
             ++is_charging;
     }
@@ -52,14 +75,16 @@ static size_t batteries_charging(const struct battery_info_node *batteries)
     return is_charging;
 }
 
-static size_t batteries_charged(const struct battery_info_node *batteries)
+size_t GLUG_LIB_LOCAL batteries_charged(const struct battery_list *batt_list)
 {
     size_t is_charged = 0;
     const struct battery_info_node *current;
 
-    for(current = batteries; is_charged && current; current = current->next)
+    if (!batt_list) return is_charged;
+
+    for (current = batt_list->batteries; current; current = current->next)
     {
-        CFBooleanRef bat_charged = (CFBooleanRef)CFDictionaryGetValue(current->info, CFSTR(kIOPSIsChargedKey));
+        CFBooleanRef bat_charged = CFDictionaryGetValue(current->info, CFSTR(kIOPSIsChargedKey));
         if (bat_charged && CFBooleanGetValue(bat_charged))
             ++is_charged;
     }
@@ -67,67 +92,37 @@ static size_t batteries_charged(const struct battery_info_node *batteries)
     return is_charged;
 }
 
-enum power_supply GLUG_LIB_API power_state()
+int8_t GLUG_LIB_LOCAL avg_battery_pct(const struct battery_list *batt_list)
 {
-    const CFTypeRef info = IOPSCopyPowerSourcesInfo();
-    const CFStringRef source = IOPSGetProvidingPowerSourceType(info);
-    enum power_supply power_state = ps_unknown;
+    int64_t total_cap = 0;
+    struct battery_info_node *current;
 
-    if (!CFStringCompare(source, CFSTR(kIOPMACPowerKey), 0))            power_state = ps_ac;
-    else if (!CFStringCompare(source, CFSTR(kIOPMBatteryPowerKey), 0))  power_state = ps_battery;
+    if (!batt_list || !batt_list->count) return (int8_t)-1;
 
-    CFRelease(info);
-    return power_state;
-}
-
-enum battery_status GLUG_LIB_API battery_state()
-{
-    size_t bat_count;
-    struct battery_info_node *batteries = get_batteries(&bat_count);
-    const int has_ac = power_state() == ps_ac;
-    const int has_battery = batteries != NULL;
-    enum battery_status battery_state = bs_unknown;
-
-    if (batteries_charged(batteries) == bat_count) battery_state = bs_charged;
-    else if (batteries_charging(batteries))              battery_state = bs_charging;
-    else if (has_battery && !has_ac)                     battery_state = bs_discharging;
-    else if (!has_battery && has_ac)                     battery_state = bs_none;
-
-    free_battery_list(batteries);
-    return battery_state;
-}
-
-int8_t GLUG_LIB_API battery_pct()
-{
-    int total_cap = 0;
-    size_t bat_count = 0;
-    struct battery_info_node *current, *batteries = get_batteries();
-
-    for(current = batteries; current; current = current->next)
+    for (current = batt_list->batteries; current; current = current->next)
     {
-        CFNumberRef cap = (CFNumberRef)CFDictionaryGetValue(current->info, CFSTR(kIOPSCurrentCapacityKey));
-        CFNumberRef max_cap = (CFNumberRef)CFDictionaryGetValue(current->info, CFSTR(kIOPSMaxCapacityKey));
+        CFNumberRef cap = CFDictionaryGetValue(current->info, CFSTR(kIOPSCurrentCapacityKey));
+        CFNumberRef max_cap = CFDictionaryGetValue(current->info, CFSTR(kIOPSMaxCapacityKey));
         int capacity = 0, max_capacity = 0;
 
-        if (cap)
+        if (cap && max_cap)
+        {
             CFNumberGetValue(cap, kCFNumberIntType, &capacity);
-        if (max_cap)
             CFNumberGetValue(max_cap, kCFNumberIntType, &max_capacity);
+        }
 
         if (max_capacity > 0)
             total_cap += capacity * 100 / max_capacity;
-
-        ++bat_count;
     }
 
-    free_battery_list(batteries);
-    if (!batteries) return -1;
-    return (char)(total_cap * 1.0 / bat_count);
+    return (int8_t)(total_cap * 1.0 / batt_list->count);
 }
 
-int64_t GLUG_LIB_API battery_time()
+int64_t GLUG_LIB_LOCAL max_battery_time(const struct battery_list *batt_list)
 {
     CFTimeInterval time = IOPSGetTimeRemainingEstimate();
-    if ((int)time == (int)kIOPSTimeRemainingUnlimited) time = kIOPSTimeRemainingUnknown;
+    if ((int)time == (int)kIOPSTimeRemainingUnlimited)
+        time = kIOPSTimeRemainingUnknown;
+
     return (int64_t)time;
 }

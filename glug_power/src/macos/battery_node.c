@@ -1,9 +1,11 @@
-#include "battery_node.h"
+#include "../battery_platform.h"
 
 #include <string.h>
 #include <stdlib.h>
 
-struct battery_info_node GLUG_LIB_LOCAL *create_battery_node(CFDictionaryRef info)
+#include <CoreFoundation/CoreFoundation.h>
+
+struct battery_info_node GLUG_LIB_LOCAL *create_battery_node(const void *info)
 {
     struct battery_info_node *battery = malloc(sizeof(struct battery_info_node));
     CFRetain(info);
@@ -13,14 +15,11 @@ struct battery_info_node GLUG_LIB_LOCAL *create_battery_node(CFDictionaryRef inf
     return battery;
 }
 
-void GLUG_LIB_LOCAL free_battery_list(struct battery_info_node *list)
+void GLUG_LIB_LOCAL free_node(struct battery_info_node *battery)
 {
-    struct battery_info_node *current = list;
-    while (current)
+    if (battery)
     {
-        struct battery_info_node *next = current->next;
-        CFRelease(current->info);
-        free(current);
-        current = next;
+        CFRelease(battery->info);
+        free(battery);
     }
 }

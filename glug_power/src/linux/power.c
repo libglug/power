@@ -1,7 +1,8 @@
-#include <glug/power/power.h>
+#include "../power_platform.h"
+#include "../battery_platform.h"
+#include "../battery_list.h"
 #include <glug/power/battery_status.h>
 #include <glug/power/power_supply.h>
-#include "battery_node.h"
 
 #include <string.h>
 #include <stdio.h>
@@ -21,6 +22,7 @@ static const char *batt_charged_val  = "Full";
 
 // add strlens of all the above strings in an enum to use as array sizes
 enum {
+    long_digit_len    = 10,
     power_root_len    = 23,
     ac_prefix_len     = 4,
     ac_online_len     = 6,
@@ -56,11 +58,11 @@ static FILE *open_power_file(const char *pow_src, const char *key)
 static long pow_src_stat(const char *pow_src, const char *key)
 {
     long val = -1;
-    char data[sizeof(long)];
+    char data[long_digit_len + 1];
     FILE *stat = open_power_file(pow_src, key);
 
     if (stat)
-        val = strtol(fgets(data, sizeof(long), stat), NULL, 10);
+        val = strtol(fgets(data, long_digit_len + 1, stat), NULL, 10);
 
     fclose(stat);
     return val;
@@ -76,7 +78,35 @@ static void pow_src_string(char *res, int res_length, const char *pow_src, const
     fclose(stat);
 }
 
-static size_t battery_count()
+int GLUG_LIB_LOCAL has_ac()
+{
+    return pow_src_stat(ac_prefix, ac_online_file) > 0;
+}
+
+struct battery_list GLUG_LIB_LOCAL battery_list()
+{
+    struct battery_list batt_list = { .batteries = NULL, .count = 0 };
+    struct battery_info_node batteries, *current;
+    struct dirent *ent;
+    DIR *power_dir = opendir(power_root);
+
+    batteries.next = NULL;
+    current = &batteries;
+
+    for(; power_dir && (ent = readdir(power_dir));)
+        if (strstr(ent->d_name, batt_prefix) == ent->d_name)
+        {
+            current = current->next = create_battery_node(ent->d_name);
+            ++batt_list.count;
+        }
+
+    closedir(power_dir);
+
+    batt_list.batteries = batteries.next;
+    return batt_list;
+}
+
+size_t GLUG_LIB_LOCAL battery_count()
 {
     size_t count = 0;
     struct dirent *ent;
@@ -90,36 +120,18 @@ static size_t battery_count()
     return count;
 }
 
-static struct battery_name_node *battery_names(size_t *count)
-{
-    struct battery_name_node batteries, *current = &batteries;
-    size_t bat_count;
-    struct dirent *ent;
-    DIR *power_dir = opendir(power_root);
-
-    for(; power_dir && (ent = readdir(power_dir));)
-        if (strstr(ent->d_name, batt_prefix) == ent->d_name)
-        {
-            current = current->next = create_battery_node(ent->d_name);
-            bat_count++;
-        }
-
-    closedir(power_dir);
-
-    if (count) *count = bat_count;
-    return batteries.next;
-}
-
-static size_t batteries_charging(const struct battery_name_node *batteries)
+size_t GLUG_LIB_LOCAL batteries_charging(const struct battery_list *batt_list)
 {
     size_t is_charging = 0;
     char res[batt_charging_len + 1];
-    const struct battery_name_node *current;
+    const struct battery_info_node *current;
 
+    if (!batt_list) return is_charging;
     res[batt_charging_len] = '\0';
-    for(current = batteries; !is_charging && current; current = current->next)
+
+    for(current = batt_list->batteries; current; current = current->next)
     {
-        pow_src_string(res, batt_charging_len + 1, current->name, batt_status_key);
+        pow_src_string(res, batt_charging_len + 1, current->info, batt_status_key);
         if (!strcmp(res, batt_charging_val))
             ++is_charging;
     }
@@ -127,16 +139,17 @@ static size_t batteries_charging(const struct battery_name_node *batteries)
     return is_charging;
 }
 
-static size_t batteries_charged(const struct battery_name_node *batteries)
+size_t GLUG_LIB_LOCAL batteries_charged(const struct battery_list *batt_list)
 {
     size_t is_charged = 0;
     char res[batt_charged_len + 1];
-    const struct battery_name_node *current;
+    const struct battery_info_node *current;
 
+    if (!batt_list) return is_charged;
     res[batt_charged_len] = '\0';
-    for(current = batteries; is_charged && current; current = current->next)
+    for(current = batt_list->batteries; current; current = current->next)
     {
-        pow_src_string(res, batt_charged_len + 1, current->name, batt_status_key);
+        pow_src_string(res, batt_charged_len + 1, current->info, batt_status_key);
         if (!strcmp(res, batt_charged_val))
             ++is_charged;
     }
@@ -144,73 +157,42 @@ static size_t batteries_charged(const struct battery_name_node *batteries)
     return is_charged;
 }
 
-enum power_supply GLUG_LIB_API power_state()
+int8_t GLUG_LIB_LOCAL avg_battery_pct(const struct battery_list *batt_list)
 {
-    if (pow_src_stat(ac_prefix, ac_online_file) > 0) return ps_ac;
-    if (battery_count() > 0)                         return ps_battery;
-    return ps_unknown;
-}
+    long long total_cap = 0;
+    struct battery_info_node *current;
 
-enum battery_status GLUG_LIB_API battery_state()
-{
-    size_t battery_count;
-    struct battery_name_node *batteries = battery_names(&battery_count);
-    const int has_ac = pow_src_stat(ac_prefix, ac_online_file) > 0;
-    const int has_battery = batteries != NULL;
-    enum battery_status status = bs_unknown;
+    if (!batt_list || !batt_list->count) return (int8_t)-1;
 
-    if (!has_battery && has_ac)                             status = bs_none;
-    else if (has_battery && !has_ac)                        status = bs_discharging;
-    else if (batteries_charging(batteries))                 status = bs_charging;
-    else if (batteries_charged(batteries) == battery_count) status = bs_charged;
-
-    free_battery_list(batteries);
-    return status;
-}
-
-int8_t GLUG_LIB_API battery_pct()
-{
-    int total_cap = 0;
-    size_t battery_count;
-    struct battery_name_node *current, *batteries = battery_names(&battery_count);
-
-    if (!batteries) return -1;
-
-    for(current = batteries; current; current = current->next)
+    for(current = batt_list->batteries; current; current = current->next)
     {
-        long capacity = pow_src_stat(current->name, batt_percent_key);
-        ++battery_count;
+        long capacity = pow_src_stat(current->info, batt_percent_key);
 
         if (capacity > -1)
             total_cap += capacity;
     }
 
-    free_battery_list(batteries);
-    return (char)(total_cap * 1.0 / battery_count);
+    return (int8_t)(total_cap * 1.0 / batt_list->count);
 }
 
-int64_t GLUG_LIB_API battery_time()
+int64_t GLUG_LIB_LOCAL max_battery_time(const struct battery_list *batt_list)
 {
-    int64_t remaining_time = -1;
-    struct battery_name_node *current, *batteries;
+    int64_t remaining_time = 0;
+    struct battery_info_node *current;
 
-    if (pow_src_stat(ac_prefix, ac_online_file) > 0) return -1;
+    if (has_ac() || !batt_list || !batt_list->count) return -1ll;
 
-    batteries = battery_names(NULL);
-    if (!batteries) return -1;
-
-    for(current = batteries; current; current = current->next)
+    for(current = batt_list->batteries; current; current = current->next)
     {
-        long watts = pow_src_stat(current->name, batt_watt_key);
-        long watthours = pow_src_stat(current->name, batt_whour_key);
+        long watthours = pow_src_stat(current->info, batt_whour_key);
+        long watts = pow_src_stat(current->info, batt_watt_key);
 
         if (watts > 0 && watthours > 0)
         {
-            int64_t curr_rem = watthours * 60ll * 60 / watts;
+            int64_t curr_rem = watthours * 60 * 60 / watts;
             remaining_time = remaining_time > curr_rem ? remaining_time : curr_rem;
         }
     }
 
-    free_battery_list(batteries);
     return remaining_time;
 }
