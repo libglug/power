@@ -1,9 +1,12 @@
-set(TEST_PROJ_NAME "pow_test")
+include(${PROJECT_SOURCE_DIR}/cmake/macros/add_example.cmake)
 
-add_executable(${TEST_PROJ_NAME} main.c)
-target_link_libraries(${TEST_PROJ_NAME} ${CMAKE_PROJECT_NAME})
+set(GLUG_TARGET_NAME ${CMAKE_PROJECT_NAME}_test)
+
+add_example(
+    TARGET_NAME ${GLUG_TARGET_NAME}
+)
 
 install(
-    TARGETS ${TEST_PROJ_NAME}
-    RUNTIME DESTINATION ${GLUG_DIST_DIR}
+    TARGETS ${GLUG_TARGET_NAME}
+    DESTINATION ${GLUG_DIST_XMPL_DIR}
 )

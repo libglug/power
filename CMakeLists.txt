@@ -1,12 +1,7 @@
-project(glug_power)
-cmake_minimum_required(VERSION 2.8)
+cmake_minimum_required(VERSION 3.0)
+cmake_policy(SET CMP0054 NEW)
 
-set(GLUG_POW_ROOT ${CMAKE_CURRENT_SOURCE_DIR}/${CMAKE_PROJECT_NAME})
-set(POW_INCLUDE_ROOT ${GLUG_POW_ROOT}/include)
-include_directories(${POW_INCLUDE_ROOT})
-include_directories(${CMAKE_CURRENT_SOURCE_DIR}/common_headers/include)
+include(cmake/macros/os.cmake)
+include(cmake/macros/project_root.cmake)
 
-set(GLUG_DIST_DIR ${CMAKE_BINARY_DIR}/dist)
-
-add_subdirectory(glug_power/src)
-add_subdirectory(example)
+create_root_project(glug_power)
