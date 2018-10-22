@@ -51,7 +51,7 @@ size_t GLUG_LIB_LOCAL battery_count()
 {
     const CFTypeRef info = IOPSCopyPowerSourcesInfo();
     const CFArrayRef sources = IOPSCopyPowerSourcesList(info);
-    size_t count = CFArrayGetCount(sources);
+    size_t count = (size_t)CFArrayGetCount(sources);
 
     CFRelease(sources);
     CFRelease(info);
@@ -121,6 +121,7 @@ int8_t GLUG_LIB_LOCAL avg_battery_pct(const struct battery_list *batt_list)
 int64_t GLUG_LIB_LOCAL max_battery_time(const struct battery_list *batt_list)
 {
     CFTimeInterval time = IOPSGetTimeRemainingEstimate();
+    (void) batt_list;
     if ((int)time == (int)kIOPSTimeRemainingUnlimited)
         time = kIOPSTimeRemainingUnknown;
 
