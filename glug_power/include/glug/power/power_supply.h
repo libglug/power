@@ -1,11 +1,11 @@
 #ifndef GLUG_POWER_SUPPLY_H
 #define GLUG_POWER_SUPPLY_H
 
-enum power_supply
+enum glug_power_supply
 {
-    ps_unknown,
-    ps_ac,
-    ps_battery,
+    glug_ps_unknown,
+    glug_ps_ac,
+    glug_ps_battery,
 };
 
 #endif // GLUG_POWER_SUPPLY_H

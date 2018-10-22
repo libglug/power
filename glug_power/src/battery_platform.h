@@ -3,7 +3,7 @@
 
 struct battery_info_node
 {
-    const void *info;
+    void *info;
     struct battery_info_node *next;
 };
 

@@ -8,9 +8,9 @@
 
 #include <stdint.h>
 
-enum power_supply   GLUG_LIB_API    power_state();
-enum battery_status GLUG_LIB_API    battery_state();
-int8_t              GLUG_LIB_API    battery_pct();
-int64_t             GLUG_LIB_API    battery_time();
+enum glug_power_supply   GLUG_LIB_API   glug_power_state();
+enum glug_battery_status GLUG_LIB_API   glug_battery_state();
+int8_t                   GLUG_LIB_API   glug_battery_pct();
+int64_t                  GLUG_LIB_API   glug_battery_time();
 
 #endif // GLUG_POWER_H

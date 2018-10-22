@@ -31,8 +31,8 @@ struct battery_list GLUG_LIB_LOCAL battery_list()
 
     for (i = 0; i < CFArrayGetCount(sources); ++i)
     {
-        const CFDictionaryRef source = IOPSGetPowerSourceDescription(info, CFArrayGetValueAtIndex(sources, i));
-        const CFStringRef type = (CFStringRef)CFDictionaryGetValue(source, CFSTR(kIOPSTypeKey));
+        CFDictionaryRef source = IOPSGetPowerSourceDescription(info, CFArrayGetValueAtIndex(sources, i));
+        CFStringRef type = (CFStringRef)CFDictionaryGetValue(source, CFSTR(kIOPSTypeKey));
         if (type && !CFStringCompare(type, CFSTR(kIOPSInternalBatteryType), 0))
         {
             current = current->next = create_battery_node(source);

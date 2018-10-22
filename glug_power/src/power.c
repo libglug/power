@@ -5,36 +5,36 @@
 #include <stdint.h>
 #include <stddef.h>
 
-enum power_supply GLUG_LIB_API power_state()
+enum glug_power_supply GLUG_LIB_API glug_power_state()
 {
-    if(has_ac())             return ps_ac;
-    if (battery_count() > 0) return ps_battery;
-    return ps_unknown;
+    if(has_ac())             return glug_ps_ac;
+    if (battery_count() > 0) return glug_ps_battery;
+    return glug_ps_unknown;
 }
 
-enum battery_status GLUG_LIB_API battery_state()
+enum glug_battery_status GLUG_LIB_API glug_battery_state()
 {
     struct battery_list batteries = battery_list();
-    enum battery_status status = bs_unknown;
+    enum glug_battery_status status = glug_bs_unknown;
     int ac = has_ac();
 
     if (!batteries.count && ac)
-        status = bs_none;
+        status = glug_bs_none;
     else if (batteries.count)
     {
         if (!ac)
-            status = bs_discharging;
+            status = glug_bs_discharging;
         else if (batteries_charging(&batteries) > 0)
-            status = bs_charging;
+            status = glug_bs_charging;
         else if (batteries_charged(&batteries) == batteries.count)
-            status = bs_charged;
+            status = glug_bs_charged;
     }
 
     free_battery_list(&batteries);
     return status;
 }
 
-int8_t GLUG_LIB_API battery_pct()
+int8_t GLUG_LIB_API glug_battery_pct()
 {
     struct battery_list batteries = battery_list();
     int8_t pct = avg_battery_pct(&batteries);
@@ -43,7 +43,7 @@ int8_t GLUG_LIB_API battery_pct()
     return pct;
 }
 
-int64_t GLUG_LIB_API battery_time()
+int64_t GLUG_LIB_API glug_battery_time()
 {
     struct battery_list batteries = battery_list();
     int64_t time = max_battery_time(&batteries);

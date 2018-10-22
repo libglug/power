@@ -1,13 +1,13 @@
 #ifndef GLUG_BATTERY_STATUS_H
 #define GLUG_BATTERY_STATUS_H
 
-enum battery_status
+enum glug_battery_status
 {
-    bs_unknown,
-    bs_none,
-    bs_discharging,
-    bs_charging,
-    bs_charged,
+    glug_bs_unknown,
+    glug_bs_none,
+    glug_bs_discharging,
+    glug_bs_charging,
+    glug_bs_charged,
 };
 
 #endif // GLUG_BATTERY_STATUS_H

@@ -8,8 +8,7 @@
 struct battery_info_node GLUG_LIB_LOCAL *create_battery_node(const void *info)
 {
     struct battery_info_node *battery = malloc(sizeof(struct battery_info_node));
-    CFRetain(info);
-    battery->info = info;
+    battery->info = (void *)CFRetain(info);
     battery->next = NULL;
 
     return battery;
