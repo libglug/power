@@ -7,7 +7,7 @@ struct battery_info_node
     struct battery_info_node *next;
 };
 
-struct battery_info_node GLUG_LIB_LOCAL *create_battery_node(const void *info);
-void                     GLUG_LIB_LOCAL  free_node(struct battery_info_node *battery);
+GLUG_LIB_LOCAL struct battery_info_node * create_battery_node(const void *info);
+GLUG_LIB_LOCAL void                       free_node(struct battery_info_node *battery);
 
 #endif // GLUG_BATTERY_PLAT_H

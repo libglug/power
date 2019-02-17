@@ -9,6 +9,6 @@ struct battery_list
     struct battery_info_node *batteries;
 };
 
-void GLUG_LIB_LOCAL free_battery_list(struct battery_list *list);
+GLUG_LIB_LOCAL void free_battery_list(struct battery_list *list);
 
 #endif // GLUG_BATTERY_LIST_H

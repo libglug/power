@@ -12,7 +12,7 @@ find_package(${TESTED_LIB} REQUIRED)
 target_link_libraries(
     ${PROJECT_NAME}
     CUnit
-    {LIB_NAME}
+    ${TESTED_LIB}
 )
 
 # copy the executable to this build directory (MSVC likes to hide it in Debug/Release folders)
