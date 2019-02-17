@@ -1,12 +1,41 @@
-include(${PROJECT_SOURCE_DIR}/cmake/macros/add_example.cmake)
+project(example)
+include(cmake/add_example.cmake)
 
-set(GLUG_TARGET_NAME ${CMAKE_PROJECT_NAME}_test)
+set(LIB glug_power)
+find_package(${LIB} REQUIRED)
+set(GLUG_TARGET_NAME ${LIB}_test)
+set(GLUG_TARGET_NAME++ ${LIB}_test++)
+
+set(INSTALL_PATH example)
 
 add_example(
-    TARGET_NAME ${GLUG_TARGET_NAME}
+    TARGET_NAME
+        ${GLUG_TARGET_NAME}
+    SRCS
+        main.c
+    LINK_LIB
+        ${LIB}
+)
+
+add_example(
+    TARGET_NAME
+        ${GLUG_TARGET_NAME++}
+    SRCS
+        main.cpp
+    LINK_LIB
+        ${LIB}
 )
 
 install(
-    TARGETS ${GLUG_TARGET_NAME}
-    DESTINATION ${GLUG_DIST_XMPL_DIR}
+    TARGETS
+        ${GLUG_TARGET_NAME}
+    DESTINATION
+        ${INSTALL_PATH}
+)
+
+install(
+    TARGETS
+        ${GLUG_TARGET_NAME++}
+    DESTINATION
+        ${INSTALL_PATH}
 )

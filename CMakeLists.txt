@@ -1,7 +1,42 @@
 cmake_minimum_required(VERSION 3.0)
 cmake_policy(SET CMP0054 NEW)
+project(glug_power)
 
-include(cmake/macros/os.cmake)
-include(cmake/macros/project_root.cmake)
+set(GLUG_LIB_TARGET ${CMAKE_PROJECT_NAME})
+option(BUILD_XMPLS "Build (and install) the examples")
 
-create_root_project(glug_power)
+# disable find_package in any subproject for finding this lib
+macro(find_package)
+    if (NOT "${ARGV0}" STREQUAL ${GLUG_LIB_TARGET})
+        _find_package(${ARGV})
+    endif()
+endmacro()
+
+# add the library subproject
+add_subdirectory(${GLUG_LIB_TARGET})
+
+# build and install examples
+if (${BUILD_XMPLS} STREQUAL "ON")
+    add_subdirectory(example)
+
+    # copy the glug lib to the example build dir if it's shared
+    if (NOT ${BUILD_STATIC})
+        add_custom_command(
+            OUTPUT
+                copy_lib POST_BUILD
+            COMMAND
+                ${CMAKE_COMMAND} -E copy
+                    $<TARGET_FILE:${GLUG_LIB_TARGET}> ${CMAKE_CURRENT_BINARY_DIR}/example
+            DEPENDS
+                ${GLUG_LIB_TARGET}
+        )
+        add_custom_target(
+            copy_lib_example
+            ALL
+            DEPENDS
+                copy_lib
+        )
+    endif()
+
+endif()
+

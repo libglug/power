@@ -4,3 +4,9 @@
 [submodule "common_headers"]
 	path = common_headers
 	url = git@github.com:libglug/common_headers.git
+[submodule "power"]
+	path = power
+	url = git@github.com:libglug/power.git
+[submodule "glug_power/common_headers"]
+	path = glug_power/common_headers
+	url = git@github.com:libglug/common_headers.git

@@ -1,4 +1,12 @@
-include(${PROJECT_SOURCE_DIR}/cmake/macros/add_gluglib.cmake)
+cmake_minimum_required(VERSION 3.0)
+
+set(VER_MAJOR 1)
+set(VER_MINOR 0)
+set(VER_PATCH 0)
+project(glug_power VERSION ${VER_MAJOR}.${VER_MINOR}.${VER_PATCH})
+include(cmake/add_gluglib.cmake)
+
+option(BUILD_STATIC "Build as a static library instead of shared" "OFF")
 
 set(SRC_ROOT src)
 set(INC_ROOT include/glug)
@@ -17,6 +25,7 @@ list(
     ${SRC_ROOT}/battery_list.c
 )
 
+# Windows sources
 set(WIN32_ROOT ${SRC_ROOT}/win32)
 list(
     APPEND
@@ -26,15 +35,16 @@ list(
     ${WIN32_ROOT}/battery_node.c
 )
 
+# Mac OS sources
 set(MACOS_ROOT ${SRC_ROOT}/macos)
 list(
     APPEND
     MACOS_SOURCE
     ${COMMON_SOURCE}
     ${MACOS_ROOT}/power.c
-    ${MACOS_ROOT}/battery_node.c
-)
+    ${MACOS_ROOT}/battery_node.c)
 
+# linux sources
 set(LINUX_ROOT ${SRC_ROOT}/linux)
 list(
     APPEND
@@ -44,29 +54,68 @@ list(
     ${LINUX_ROOT}/battery_node.c
 )
 
-if(${GLUG_OS_MACOS})
-    find_library(APPLE_CF CoreFoundation)
-    find_library(APPLE_IOKIT IOKit)
-    set(EXT_LIBS ${APPLE_CF} ${APPLE_IOKIT})
-endif()
-
-set(GLUG_TARGET_NAME ${CMAKE_PROJECT_NAME})
-
 add_gluglib(
-    TARGET_NAME  ${GLUG_TARGET_NAME}
+    TARGET_NAME ${CMAKE_PROJECT_NAME}
+    STATIC_BUILD ${BUILD_STATIC}
     WIN32_SOURCE ${WIN32_SOURCE}
     MACOS_SOURCE ${MACOS_SOURCE}
     LINUX_SOURCE ${LINUX_SOURCE}
-    EXT_LIBS     ${EXT_LIBS}
+    WIN32_LIBS
+    MACOS_LIBS CoreFoundation IOKit
+    LINUX_LIBS
+)
+
+target_include_directories(
+    ${CMAKE_PROJECT_NAME}
+    PUBLIC
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/common_headers/include>
+    INTERFACE
+        $<INSTALL_INTERFACE:include>
 )
 
 # install the library
 install(
-    TARGETS ${GLUG_TARGET_NAME}
-    DESTINATION ${GLUG_DIST_LIBR_DIR}
+    TARGETS
+        ${CMAKE_PROJECT_NAME}
+    EXPORT
+        Find${CMAKE_PROJECT_NAME}
+    DESTINATION
+        lib
 )
 
+#install the lib's headers
 install(
-    TARGETS ${GLUG_TARGET_NAME}
-    DESTINATION ${GLUG_DIST_XMPL_DIR}
+    DIRECTORY
+        include/
+    DESTINATION
+        include
 )
+
+# install the common_headers
+install(
+    DIRECTORY
+        common_headers/include/
+    DESTINATION
+        include
+    FILES_MATCHING PATTERN
+        "*.h"
+)
+
+# export the package to be included in other projects
+export(PACKAGE ${CMAKE_PROJECT_NAME})
+export(
+    TARGETS
+        ${CMAKE_PROJECT_NAME}
+    FILE
+        ${CMAKE_PROJECT_NAME}-config.cmake
+)
+
+# install export file
+install(
+    EXPORT
+        Find${CMAKE_PROJECT_NAME}
+    DESTINATION
+        cmake
+)
+
