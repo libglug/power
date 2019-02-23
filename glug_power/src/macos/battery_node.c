@@ -5,7 +5,7 @@
 
 #include <CoreFoundation/CoreFoundation.h>
 
-struct battery_info_node GLUG_LIB_LOCAL *create_battery_node(const void *info)
+GLUG_LIB_LOCAL struct battery_info_node *create_battery_node(const void *info)
 {
     struct battery_info_node *battery = malloc(sizeof(struct battery_info_node));
     battery->info = (void *)CFRetain(info);
@@ -14,7 +14,7 @@ struct battery_info_node GLUG_LIB_LOCAL *create_battery_node(const void *info)
     return battery;
 }
 
-void GLUG_LIB_LOCAL free_node(struct battery_info_node *battery)
+GLUG_LIB_LOCAL void free_node(struct battery_info_node *battery)
 {
     if (battery)
     {

@@ -6,24 +6,20 @@
 
 #include <Windows.h>
 
-static const unsigned char bat_charging = 1 << 3;
-static const unsigned char bat_missing = 1 << 7;
-static const unsigned char bat_unknown = (unsigned char)-1;
-
 static int has_battery(SYSTEM_POWER_STATUS *ps)
 {
-    return !(ps->BatteryFlag == bat_unknown || ps->BatteryFlag & bat_missing);
+    return !(ps->BatteryFlag == BATTERY_FLAG_UNKNOWN || ps->BatteryFlag & BATTERY_FLAG_NO_BATTERY);
 }
 
-int GLUG_LIB_LOCAL has_ac()
+GLUG_LIB_LOCAL int has_ac()
 {
     SYSTEM_POWER_STATUS ps;
     GetSystemPowerStatus(&ps);
 
-    return ps.ACLineStatus == 1;
+    return ps.ACLineStatus == AC_LINE_ONLINE;
 }
 
-struct battery_list GLUG_LIB_LOCAL battery_list()
+GLUG_LIB_LOCAL struct battery_list battery_list()
 {
     struct battery_list list = { .batteries = NULL, .count = 0 };
     SYSTEM_POWER_STATUS ps;
@@ -33,7 +29,7 @@ struct battery_list GLUG_LIB_LOCAL battery_list()
     return list;
 }
 
-size_t GLUG_LIB_LOCAL battery_count()
+GLUG_LIB_LOCAL size_t battery_count()
 {
     SYSTEM_POWER_STATUS ps;
     GetSystemPowerStatus(&ps);
@@ -41,27 +37,27 @@ size_t GLUG_LIB_LOCAL battery_count()
     return has_battery(&ps) ? 1 : 0;
 }
 
-size_t GLUG_LIB_LOCAL batteries_charging(const struct battery_list *list)
+GLUG_LIB_LOCAL size_t batteries_charging(const struct battery_list *list)
 {
     SYSTEM_POWER_STATUS ps;
     GetSystemPowerStatus(&ps);
     (void) list;
 
-    return has_battery(&ps) && ps.BatteryFlag & bat_charging ? 1 : 0;
+    return has_battery(&ps) && ps.BatteryFlag & BATTERY_FLAG_CHARGING ? 1 : 0;
 }
 
-size_t GLUG_LIB_LOCAL batteries_charged (const struct battery_list *list)
+GLUG_LIB_LOCAL size_t batteries_charged (const struct battery_list *list)
 {
     SYSTEM_POWER_STATUS ps;
     GetSystemPowerStatus(&ps);
     (void) list;
 
-    return ps.ACLineStatus == 1 &&
+    return ps.ACLineStatus == AC_LINE_ONLINE &&
            has_battery(&ps) &&
-           ps.BatteryFlag != bat_charging ? 1 : 0;
+           ps.BatteryFlag != BATTERY_FLAG_CHARGING ? 1 : 0;
 }
 
-int8_t GLUG_LIB_LOCAL avg_battery_pct (const struct battery_list *list)
+GLUG_LIB_LOCAL int8_t avg_battery_pct (const struct battery_list *list)
 {
     SYSTEM_POWER_STATUS ps;
     GetSystemPowerStatus(&ps);
@@ -70,7 +66,7 @@ int8_t GLUG_LIB_LOCAL avg_battery_pct (const struct battery_list *list)
     return (int8_t)ps.BatteryLifePercent;
 }
 
-int64_t GLUG_LIB_LOCAL max_battery_time(const struct battery_list *list)
+GLUG_LIB_LOCAL int64_t max_battery_time(const struct battery_list *list)
 {
     SYSTEM_POWER_STATUS ps;
     GetSystemPowerStatus(&ps);

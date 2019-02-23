@@ -3,7 +3,7 @@
 #include <string.h>
 #include <stdlib.h>
 
-struct battery_info_node GLUG_LIB_LOCAL *create_battery_node(const void *name)
+GLUG_LIB_LOCAL struct battery_info_node *create_battery_node(const void *name)
 {
     struct battery_info_node *battery = malloc(sizeof(struct battery_info_node));
     battery->info = malloc(strlen(name) + 1);
@@ -13,7 +13,7 @@ struct battery_info_node GLUG_LIB_LOCAL *create_battery_node(const void *name)
     return battery;
 }
 
-void GLUG_LIB_LOCAL free_node(struct battery_info_node *battery)
+GLUG_LIB_LOCAL void free_node(struct battery_info_node *battery)
 {
     if (battery)
     {

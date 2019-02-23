@@ -78,12 +78,12 @@ static void pow_src_string(char *res, int res_length, const char *pow_src, const
     fclose(stat);
 }
 
-int GLUG_LIB_LOCAL has_ac()
+GLUG_LIB_LOCAL int has_ac()
 {
     return pow_src_stat(ac_prefix, ac_online_file) > 0;
 }
 
-struct battery_list GLUG_LIB_LOCAL battery_list()
+GLUG_LIB_LOCAL struct battery_list battery_list()
 {
     struct battery_list batt_list = { .batteries = NULL, .count = 0 };
     struct battery_info_node batteries, *current;
@@ -106,7 +106,7 @@ struct battery_list GLUG_LIB_LOCAL battery_list()
     return batt_list;
 }
 
-size_t GLUG_LIB_LOCAL battery_count()
+GLUG_LIB_LOCAL size_t battery_count()
 {
     size_t count = 0;
     struct dirent *ent;
@@ -120,7 +120,7 @@ size_t GLUG_LIB_LOCAL battery_count()
     return count;
 }
 
-size_t GLUG_LIB_LOCAL batteries_charging(const struct battery_list *batt_list)
+GLUG_LIB_LOCAL size_t batteries_charging(const struct battery_list *batt_list)
 {
     size_t is_charging = 0;
     char res[batt_charging_len + 1];
@@ -139,7 +139,7 @@ size_t GLUG_LIB_LOCAL batteries_charging(const struct battery_list *batt_list)
     return is_charging;
 }
 
-size_t GLUG_LIB_LOCAL batteries_charged(const struct battery_list *batt_list)
+GLUG_LIB_LOCAL size_t batteries_charged(const struct battery_list *batt_list)
 {
     size_t is_charged = 0;
     char res[batt_charged_len + 1];
@@ -157,7 +157,7 @@ size_t GLUG_LIB_LOCAL batteries_charged(const struct battery_list *batt_list)
     return is_charged;
 }
 
-int8_t GLUG_LIB_LOCAL avg_battery_pct(const struct battery_list *batt_list)
+GLUG_LIB_LOCAL int8_t avg_battery_pct(const struct battery_list *batt_list)
 {
     long long total_cap = 0;
     struct battery_info_node *current;
@@ -175,7 +175,7 @@ int8_t GLUG_LIB_LOCAL avg_battery_pct(const struct battery_list *batt_list)
     return (int8_t)(total_cap * 1.0 / batt_list->count);
 }
 
-int64_t GLUG_LIB_LOCAL max_battery_time(const struct battery_list *batt_list)
+GLUG_LIB_LOCAL int64_t max_battery_time(const struct battery_list *batt_list)
 {
     int64_t remaining_time = 0;
     struct battery_info_node *current;
