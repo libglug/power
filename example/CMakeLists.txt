@@ -15,6 +15,8 @@ add_example(
         main.c
     LINK_LIB
         ${LIB}
+    INSTALL_PATH
+        ${INSTALL_PATH}
 )
 
 add_example(
@@ -24,18 +26,6 @@ add_example(
         main.cpp
     LINK_LIB
         ${LIB}
-)
-
-install(
-    TARGETS
-        ${GLUG_TARGET_NAME}
-    DESTINATION
-        ${INSTALL_PATH}
-)
-
-install(
-    TARGETS
-        ${GLUG_TARGET_NAME++}
-    DESTINATION
+    INSTALL_PATH
         ${INSTALL_PATH}
 )

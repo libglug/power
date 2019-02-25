@@ -11,7 +11,7 @@ static int has_battery(SYSTEM_POWER_STATUS *ps)
     return !(ps->BatteryFlag == BATTERY_FLAG_UNKNOWN || ps->BatteryFlag & BATTERY_FLAG_NO_BATTERY);
 }
 
-GLUG_LIB_LOCAL int has_ac()
+int has_ac()
 {
     SYSTEM_POWER_STATUS ps;
     GetSystemPowerStatus(&ps);
@@ -19,7 +19,7 @@ GLUG_LIB_LOCAL int has_ac()
     return ps.ACLineStatus == AC_LINE_ONLINE;
 }
 
-GLUG_LIB_LOCAL struct battery_list battery_list()
+struct battery_list battery_list()
 {
     struct battery_list list = { .batteries = NULL, .count = 0 };
     SYSTEM_POWER_STATUS ps;
@@ -29,7 +29,7 @@ GLUG_LIB_LOCAL struct battery_list battery_list()
     return list;
 }
 
-GLUG_LIB_LOCAL size_t battery_count()
+size_t battery_count()
 {
     SYSTEM_POWER_STATUS ps;
     GetSystemPowerStatus(&ps);
@@ -37,7 +37,7 @@ GLUG_LIB_LOCAL size_t battery_count()
     return has_battery(&ps) ? 1 : 0;
 }
 
-GLUG_LIB_LOCAL size_t batteries_charging(const struct battery_list *list)
+size_t batteries_charging(const struct battery_list *list)
 {
     SYSTEM_POWER_STATUS ps;
     GetSystemPowerStatus(&ps);
@@ -46,7 +46,7 @@ GLUG_LIB_LOCAL size_t batteries_charging(const struct battery_list *list)
     return has_battery(&ps) && ps.BatteryFlag & BATTERY_FLAG_CHARGING ? 1 : 0;
 }
 
-GLUG_LIB_LOCAL size_t batteries_charged (const struct battery_list *list)
+size_t batteries_charged (const struct battery_list *list)
 {
     SYSTEM_POWER_STATUS ps;
     GetSystemPowerStatus(&ps);
@@ -57,7 +57,7 @@ GLUG_LIB_LOCAL size_t batteries_charged (const struct battery_list *list)
            ps.BatteryFlag != BATTERY_FLAG_CHARGING ? 1 : 0;
 }
 
-GLUG_LIB_LOCAL int8_t avg_battery_pct (const struct battery_list *list)
+int8_t avg_battery_pct (const struct battery_list *list)
 {
     SYSTEM_POWER_STATUS ps;
     GetSystemPowerStatus(&ps);
@@ -66,7 +66,7 @@ GLUG_LIB_LOCAL int8_t avg_battery_pct (const struct battery_list *list)
     return (int8_t)ps.BatteryLifePercent;
 }
 
-GLUG_LIB_LOCAL int64_t max_battery_time(const struct battery_list *list)
+int64_t max_battery_time(const struct battery_list *list)
 {
     SYSTEM_POWER_STATUS ps;
     GetSystemPowerStatus(&ps);

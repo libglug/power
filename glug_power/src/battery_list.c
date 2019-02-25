@@ -1,15 +1,15 @@
 #include "battery_list.h"
 #include "battery_platform.h"
 
-GLUG_LIB_LOCAL void free_battery_list(struct battery_list *list)
+void free_battery_list(struct battery_list *list)
 {
     if (list)
     {
-        struct battery_info_node *battery = list->batteries;
-        while(battery)
+        struct battery_info_node *node, *next;
+        for (node = list->batteries; node; node = next)
         {
-            free_node(battery);
-            battery = battery->next;
+            next = node->next;
+            free_node(node);
         }
     }
 }

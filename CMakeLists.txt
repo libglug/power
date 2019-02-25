@@ -1,9 +1,10 @@
 cmake_minimum_required(VERSION 3.0)
 cmake_policy(SET CMP0054 NEW)
-project(glug_power)
+project(glug_power_suite)
 
-set(GLUG_LIB_TARGET ${CMAKE_PROJECT_NAME})
-option(BUILD_XMPLS "Build (and install) the examples")
+set(GLUG_LIB_TARGET glug_power)
+option(BUILD_XMPLS "Build the examples?" OFF)
+option(BUILD_TESTS "Build tests?" OFF)
 
 # disable find_package in any subproject for finding this lib
 macro(find_package)
@@ -40,3 +41,7 @@ if (${BUILD_XMPLS} STREQUAL "ON")
 
 endif()
 
+if (${BUILD_TESTS})
+    enable_testing()
+    add_subdirectory(test)
+endif()
