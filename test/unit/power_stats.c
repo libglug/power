@@ -4,7 +4,7 @@
 
 #include "mocks/ac.mock.h"
 #include "mocks/battery_list.mock.h"
-#include "create_suite.h"
+#include "../create_suite.h"
 
 void before_each(void)
 {

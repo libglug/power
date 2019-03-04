@@ -1,5 +1,5 @@
 add_subdirectory(CUnit/CUnit EXCLUDE_FROM_ALL)
-include(add_unit_test.cmake)
+include(CUnit/CUnit/cmake/add_unit_test.cmake)
 
 set(SRC_ROOT ../glug_power)
 
@@ -27,6 +27,7 @@ add_unit_test(
     SOURCES
         unit/power_stats.c
         ${SRC_ROOT}/src/power.c
+        create_suite.h
         ${MOCKS}
     INCLUDE_DIRS
         ${INCLUDE_DIRS}
