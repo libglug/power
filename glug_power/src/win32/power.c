@@ -39,38 +39,38 @@ size_t battery_count()
 
 size_t batteries_charging(const struct battery_list *list)
 {
+    (void) list;
     SYSTEM_POWER_STATUS ps;
     GetSystemPowerStatus(&ps);
-    (void) list;
 
     return has_battery(&ps) && ps.BatteryFlag & BATTERY_FLAG_CHARGING ? 1 : 0;
 }
 
-size_t batteries_charged (const struct battery_list *list)
+size_t batteries_charged(const struct battery_list *list)
 {
+    (void) list;
     SYSTEM_POWER_STATUS ps;
     GetSystemPowerStatus(&ps);
-    (void) list;
 
     return ps.ACLineStatus == AC_LINE_ONLINE &&
            has_battery(&ps) &&
-           ps.BatteryFlag != BATTERY_FLAG_CHARGING ? 1 : 0;
+           !(ps.BatteryFlag & BATTERY_FLAG_CHARGING) ? 1 : 0;
 }
 
-int8_t avg_battery_pct (const struct battery_list *list)
+int8_t avg_battery_pct(const struct battery_list *list)
 {
+    (void) list;
     SYSTEM_POWER_STATUS ps;
     GetSystemPowerStatus(&ps);
-    (void) list;
 
     return (int8_t)ps.BatteryLifePercent;
 }
 
 int64_t max_battery_time(const struct battery_list *list)
 {
+    (void) list;
     SYSTEM_POWER_STATUS ps;
     GetSystemPowerStatus(&ps);
-    (void) list;
 
     // cast to 32bit to report a proper -1ll instead of ULONG_MAX
     return (int64_t)(int32_t)ps.BatteryLifeTime;
