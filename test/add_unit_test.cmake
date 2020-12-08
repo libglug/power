@@ -12,8 +12,6 @@ function(add_unit_test)
 
     set(TEST_TARGETS ${TEST_TARGETS} ${UT_TARGET} PARENT_SCOPE)
 
-
-
     target_compile_definitions(
         ${UT_TARGET}
         PRIVATE

@@ -25,11 +25,14 @@ add_unit_test(
     SOURCES
         unit/power_stats.c
         ${LIB_SRC}/power.c
+        unit/mocks/ac.mock.h
+        unit/mocks/ac.mock.c
+        unit/mocks/battery_list.mock.h
+        unit/mocks/battery_list.mock.c
     INCLUDE_DIRS
         ${UNIT_INCLUDE_DIRS}
 )
 
-# copy the executable to this build directory (MSVC likes to hide it in Debug/Release folders)
 add_custom_target(
     check
     ALL
