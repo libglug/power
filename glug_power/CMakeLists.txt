@@ -8,12 +8,19 @@ include(cmake/add_gluglib.cmake)
 
 option(BUILD_STATIC "Build as a static library?" OFF)
 
+set(COM_ROOT common_headers/include/glug)
 set(SRC_ROOT src)
 set(INC_ROOT include/glug)
 
 list(
     APPEND
     COMMON_SOURCE
+    ${COM_ROOT}/allocator_t.h
+    ${COM_ROOT}/bool.h
+    ${COM_ROOT}/extern.h
+    ${COM_ROOT}/import.h
+    ${COM_ROOT}/os.h
+    ${COM_ROOT}/params.h
     ${INC_ROOT}/power.h
     ${INC_ROOT}/power/power.h
     ${INC_ROOT}/power/battery_status.h

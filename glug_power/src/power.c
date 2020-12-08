@@ -5,14 +5,14 @@
 #include <stdint.h>
 #include <stddef.h>
 
-GLUG_LIB_API enum glug_power_supply glug_power_active_supply(void)
+enum glug_power_supply glug_power_active_supply(void)
 {
     if (has_ac())            return glug_power_ac;
     if (battery_count() > 0) return glug_power_battery;
     return glug_power_unknown;
 }
 
-GLUG_LIB_API enum glug_battery_status glug_power_battery_state(void)
+enum glug_battery_status glug_power_battery_state(void)
 {
     struct battery_list batteries = battery_list();
     enum glug_battery_status status = glug_battery_unknown;
@@ -34,7 +34,7 @@ GLUG_LIB_API enum glug_battery_status glug_power_battery_state(void)
     return status;
 }
 
-GLUG_LIB_API int8_t glug_power_battery_pct(void)
+int8_t glug_power_battery_pct(void)
 {
     struct battery_list batteries = battery_list();
     int8_t pct = avg_battery_pct(&batteries);
@@ -43,7 +43,7 @@ GLUG_LIB_API int8_t glug_power_battery_pct(void)
     return pct;
 }
 
-GLUG_LIB_API int64_t glug_power_battery_time(void)
+int64_t glug_power_battery_time(void)
 {
     struct battery_list batteries = battery_list();
     int64_t time = max_battery_time(&batteries);

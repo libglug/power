@@ -11,21 +11,32 @@ set(INSTALL_PATH example)
 add_example(
     TARGET_NAME
         ${GLUG_TARGET_NAME}
-    SRCS
-        main.c
-    LINK_LIB
-        ${LIB}
     INSTALL_PATH
         ${INSTALL_PATH}
+    SRC
+        main.c
+    LINK_LIBS
+        ${LIB}
 )
 
 add_example(
     TARGET_NAME
         ${GLUG_TARGET_NAME++}
-    SRCS
-        main.cpp
-    LINK_LIB
-        ${LIB}
     INSTALL_PATH
         ${INSTALL_PATH}
+    SRC
+        main.cpp
+    LINK_LIBS
+        ${LIB}
+)
+
+target_compile_features(
+    ${GLUG_TARGET_NAME++}
+    PUBLIC
+        cxx_std_11
+)
+set_target_properties(
+    ${GLUG_TARGET_NAME++}
+    PROPERTIES
+        CXX_EXTENSIONS OFF
 )
