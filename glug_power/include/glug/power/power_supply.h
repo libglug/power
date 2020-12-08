@@ -3,9 +3,13 @@
 
 enum glug_power_supply
 {
-    glug_ps_unknown,
-    glug_ps_ac,
-    glug_ps_battery,
+    glug_power_unknown = -1,
+    glug_power_ac,
+    glug_power_battery,
 };
+
+#ifdef GLUG_USE_TYPEDEFS
+    typedef enum glug_power_supply glug_power_supply_t;
+#endif
 
 #endif // GLUG_POWER_SUPPLY_H

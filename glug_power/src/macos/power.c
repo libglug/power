@@ -8,7 +8,7 @@
 #include <IOKit/ps/IOPowerSources.h>
 #include <IOKit/ps/IOPSKeys.h>
 
-int has_ac()
+int has_ac(void)
 {
     const CFTypeRef info = IOPSCopyPowerSourcesInfo();
     const CFStringRef source = IOPSGetProvidingPowerSourceType(info);
@@ -18,7 +18,7 @@ int has_ac()
     return ac;
 }
 
-struct battery_list battery_list()
+struct battery_list battery_list(void)
 {
     struct battery_list batt_list = { .batteries = NULL, .count = 0 };
     struct battery_info_node batteries, *current;
@@ -47,7 +47,7 @@ struct battery_list battery_list()
     return batt_list;
 }
 
-size_t battery_count()
+size_t battery_count(void)
 {
     const CFTypeRef info = IOPSCopyPowerSourcesInfo();
     const CFArrayRef sources = IOPSCopyPowerSourcesList(info);

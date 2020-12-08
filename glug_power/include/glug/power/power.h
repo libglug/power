@@ -11,10 +11,10 @@
 
 GLUG_EXTERN_START
 
-GLUG_LIB_API enum glug_power_supply   glug_power_state(void);
-GLUG_LIB_API enum glug_battery_status glug_battery_state(void);
-GLUG_LIB_API int8_t                   glug_battery_pct(void);
-GLUG_LIB_API int64_t                  glug_battery_time(void);
+GLUG_LIB_API enum glug_power_supply   glug_power_active_supply(void);
+GLUG_LIB_API enum glug_battery_status glug_power_battery_state(void);
+GLUG_LIB_API int8_t                   glug_power_battery_pct(void);
+GLUG_LIB_API int64_t                  glug_power_battery_time(void);
 
 GLUG_EXTERN_END
 
