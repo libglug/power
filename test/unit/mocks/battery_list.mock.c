@@ -1,9 +1,13 @@
 #include "battery_list.mock.h"
-#include <power_platform.h>
-#include <battery_list.h>
 #include <glug/power/battery_status.h>
 
 #include <stdlib.h>
+
+struct battery_list
+{
+    size_t count;
+    struct battery_info_node *batteries;
+};
 
 static size_t charged_batteries = 0;
 static size_t charging_batteries = 0;

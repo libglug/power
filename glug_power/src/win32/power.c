@@ -11,7 +11,7 @@ static int has_battery(SYSTEM_POWER_STATUS *ps)
     return !(ps->BatteryFlag == BATTERY_FLAG_UNKNOWN || ps->BatteryFlag & BATTERY_FLAG_NO_BATTERY);
 }
 
-int has_ac()
+int has_ac(void)
 {
     SYSTEM_POWER_STATUS ps;
     GetSystemPowerStatus(&ps);
@@ -19,7 +19,7 @@ int has_ac()
     return ps.ACLineStatus == AC_LINE_ONLINE;
 }
 
-struct battery_list battery_list()
+struct battery_list battery_list(void)
 {
     struct battery_list list = { .batteries = NULL, .count = 0 };
     SYSTEM_POWER_STATUS ps;
@@ -29,7 +29,7 @@ struct battery_list battery_list()
     return list;
 }
 
-size_t battery_count()
+size_t battery_count(void)
 {
     SYSTEM_POWER_STATUS ps;
     GetSystemPowerStatus(&ps);

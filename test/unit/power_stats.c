@@ -1,10 +1,10 @@
-#include <glug/power.h>
+#include <glug/power/power.h>
 #include <CUnit/Basic.h>
 #include <CUnit/Assert.h>
 
 #include "mocks/ac.mock.h"
 #include "mocks/battery_list.mock.h"
-#include "../create_suite.h"
+#include <create_suite.h>
 
 void before_each(void)
 {
@@ -15,63 +15,63 @@ void test_no_batteries(void)
 {
     enable_ac();
     build_battery_list_none();
-    CU_ASSERT_EQUAL(glug_power_state(), glug_ps_ac);
-    CU_ASSERT_EQUAL(glug_battery_state(), glug_bs_none);
+    CU_ASSERT_EQUAL(glug_power_active_supply(), glug_power_ac);
+    CU_ASSERT_EQUAL(glug_power_battery_state(), glug_battery_none);
 }
 
 void test_unknown_battery_state(void)
 {
     build_battery_list_none();
-    CU_ASSERT_EQUAL(glug_power_state(), glug_ps_unknown);
-    CU_ASSERT_EQUAL(glug_battery_state(), glug_bs_unknown);
+    CU_ASSERT_EQUAL(glug_power_active_supply(), glug_power_unknown);
+    CU_ASSERT_EQUAL(glug_power_battery_state(), glug_battery_unknown);
 }
 
 void test_batteries_charged(void)
 {
     enable_ac();
     build_battery_list_charged();
-    CU_ASSERT_EQUAL(glug_power_state(), glug_ps_ac);
-    CU_ASSERT_EQUAL(glug_battery_state(), glug_bs_charged);
+    CU_ASSERT_EQUAL(glug_power_active_supply(), glug_power_ac);
+    CU_ASSERT_EQUAL(glug_power_battery_state(), glug_battery_charged);
 }
 
 void test_batteries_charging(void)
 {
     enable_ac();
     build_battery_list_charging();
-    CU_ASSERT_EQUAL(glug_power_state(), glug_ps_ac);
-    CU_ASSERT_EQUAL(glug_battery_state(), glug_bs_charging);
+    CU_ASSERT_EQUAL(glug_power_active_supply(), glug_power_ac);
+    CU_ASSERT_EQUAL(glug_power_battery_state(), glug_battery_charging);
 }
 
 void test_batteries_discharging(void)
 {
     build_battery_list_charging();
-    CU_ASSERT_EQUAL(glug_power_state(), glug_ps_battery);
-    CU_ASSERT_EQUAL(glug_battery_state(), glug_bs_discharging);
+    CU_ASSERT_EQUAL(glug_power_active_supply(), glug_power_battery);
+    CU_ASSERT_EQUAL(glug_power_battery_state(), glug_battery_discharging);
 }
 
 void test_batteries_mixed_disc(void)
 {
     build_battery_list_mixed();
-    CU_ASSERT_EQUAL(glug_power_state(), glug_ps_battery);
-    CU_ASSERT_EQUAL(glug_battery_state(), glug_bs_discharging);
+    CU_ASSERT_EQUAL(glug_power_active_supply(), glug_power_battery);
+    CU_ASSERT_EQUAL(glug_power_battery_state(), glug_battery_discharging);
 }
 
 void test_batteries_mixed_charging(void)
 {
     enable_ac();
     build_battery_list_mixed();
-    CU_ASSERT_EQUAL(glug_power_state(), glug_ps_ac);
-    CU_ASSERT_EQUAL(glug_battery_state(), glug_bs_charging);
+    CU_ASSERT_EQUAL(glug_power_active_supply(), glug_power_ac);
+    CU_ASSERT_EQUAL(glug_power_battery_state(), glug_battery_charging);
 }
 
 void test_batteries_pct_charged(void)
 {
-    CU_ASSERT_EQUAL(glug_battery_pct(), mock_pct());
+    CU_ASSERT_EQUAL(glug_power_battery_pct(), mock_pct());
 }
 
 void test_batteries_time(void)
 {
-    int64_t time = glug_battery_time();
+    int64_t time = glug_power_battery_time();
 
     CU_ASSERT_EQUAL(time / 60 / 60, mock_hours());
     CU_ASSERT_EQUAL(time / 60 % 60, mock_minutes());

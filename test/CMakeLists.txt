@@ -1,55 +1,55 @@
 add_subdirectory(CUnit/CUnit EXCLUDE_FROM_ALL)
-include(CUnit/CUnit/cmake/add_unit_test.cmake)
+include(add_unit_test.cmake)
 
-set(SRC_ROOT ../glug_power)
+set(TESTED_LIB glug_power)
+
+set(LIB_SRC ../${TESTED_LIB}/src)
+list(
+    APPEND
+    UNIT_INCLUDE_DIRS
+    .
+    ../${TESTED_LIB}/src
+    ../${TESTED_LIB}/include
+    ../${TESTED_LIB}/common_headers/include
+)
 
 # unit tests
 list(
     APPEND
-    INCLUDE_DIRS
-    CUnit/CUnit/include
-    ${SRC_ROOT}/common_headers/include
-    ${SRC_ROOT}/include
-    ${SRC_ROOT}/src
+    TEST_TARGETS
 )
-set(MOCK_DIR unit/mocks)
-list(
-    APPEND
-    MOCKS
-    ${MOCK_DIR}/ac.mock.h
-    ${MOCK_DIR}/ac.mock.c
-    ${MOCK_DIR}/battery_list.mock.h
-    ${MOCK_DIR}/battery_list.mock.c
-)
+
 add_unit_test(
-    TARGETNAME
+    TARGET
         unit-powerstats
     SOURCES
         unit/power_stats.c
-        ${SRC_ROOT}/src/power.c
-        create_suite.h
-        ${MOCKS}
+        ${LIB_SRC}/power.c
+        unit/mocks/ac.mock.h
+        unit/mocks/ac.mock.c
+        unit/mocks/battery_list.mock.h
+        unit/mocks/battery_list.mock.c
     INCLUDE_DIRS
-        ${INCLUDE_DIRS}
-    LINK_LIBS
-        CUnit
+        ${UNIT_INCLUDE_DIRS}
 )
 
-# create a custom target which builds tests and their dependencies
-# (bug in CMake? (https://gitlab.kitware.com/cmake/cmake/issues/8774))
 add_custom_target(
     check
     ALL
     DEPENDS
-        # add other tests executables here
-        CUnit unit-powerstats
+        CUnit ${TEST_TARGETS} ${TESTED_LIB}
 )
 
-# copy the CUnit library to the same directory
 add_custom_command(
     TARGET
         check POST_BUILD
+    # copy the CUnit library to the same directory as the test binaries
     COMMAND
         ${CMAKE_COMMAND} -E copy
             $<TARGET_FILE:CUnit> ${CMAKE_CURRENT_BINARY_DIR}
+#    TODO: for integration or e2e test
+#    # copy the library to the same directory as the test binaries
+#    COMMAND
+#        ${CMAKE_COMMAND} -E copy
+#            $<TARGET_FILE:${TESTED_LIB}> ${CMAKE_CURRENT_BINARY_DIR}
 )

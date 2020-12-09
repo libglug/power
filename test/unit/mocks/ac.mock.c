@@ -1,4 +1,3 @@
-#include <power_platform.h>
 #include "ac.mock.h"
 
 static int ac_enabled = 1;

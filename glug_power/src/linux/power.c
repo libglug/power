@@ -78,12 +78,12 @@ static void pow_src_string(char *res, int res_length, const char *pow_src, const
     fclose(stat);
 }
 
-int has_ac()
+int has_ac(void)
 {
     return pow_src_stat(ac_prefix, ac_online_file) > 0;
 }
 
-struct battery_list battery_list()
+struct battery_list battery_list(void)
 {
     struct battery_list batt_list = { .batteries = NULL, .count = 0 };
     struct battery_info_node batteries, *current;
@@ -106,7 +106,7 @@ struct battery_list battery_list()
     return batt_list;
 }
 
-size_t battery_count()
+size_t battery_count(void)
 {
     size_t count = 0;
     struct dirent *ent;
