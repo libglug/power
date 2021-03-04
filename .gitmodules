@@ -1,6 +1,6 @@
 [submodule "glug_power/common_headers"]
-        path = glug_power/common_headers
-        url = https://github.com/libglug/common_headers.git
-[submodule "test/CUnit"]
-	path = test/CUnit
-        url = https://github.com/libglug/cunit.git
+	path = glug_power/common_headers
+	url = https://github.com/libglug/common_headers.git
+[submodule "test/cunit"]
+	path = test/cunit
+	url = https://github.com/libglug/cunit.git

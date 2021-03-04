@@ -1,82 +1,89 @@
-cmake_minimum_required(VERSION 3.0)
+cmake_minimum_required(VERSION 3.7)
 
-set(VER_MAJOR 1)
-set(VER_MINOR 0)
-set(VER_PATCH 0)
-project(glug_power VERSION ${VER_MAJOR}.${VER_MINOR}.${VER_PATCH})
-include(cmake/add_gluglib.cmake)
+include(cmake/version.cmake)
 
-option(BUILD_STATIC "Build as a static library?" OFF)
+include(cmake/detect_os.cmake)
+include(cmake/set_compilation_props.cmake)
+include(cmake/link_libs.cmake)
+include(cmake/set_export_defs.cmake)
 
-set(COM_ROOT common_headers/include/glug)
-set(SRC_ROOT src)
-set(INC_ROOT include/glug)
+parse_git_tag_version(VER_MAJOR VER_MINOR VER_PATCH VER_META VER_REV VER_HASH VER_FULL)
+set(FULL_VERSION ${VER_MAJOR}.${VER_MINOR}.${VER_PATCH}-${VER_META})
 
-list(
-    APPEND
-    COMMON_SOURCE
-    ${COM_ROOT}/allocator_t.h
-    ${COM_ROOT}/bool.h
-    ${COM_ROOT}/extern.h
-    ${COM_ROOT}/import.h
-    ${COM_ROOT}/os.h
-    ${COM_ROOT}/params.h
-    ${INC_ROOT}/power.h
-    ${INC_ROOT}/power/power.h
-    ${INC_ROOT}/power/battery_status.h
-    ${INC_ROOT}/power/power_supply.h
-    ${SRC_ROOT}/power.c
-    ${SRC_ROOT}/power_platform.h
-    ${SRC_ROOT}/battery_platform.h
-    ${SRC_ROOT}/battery_list.h
-    ${SRC_ROOT}/battery_list.c
+project(
+    glug_power
+    LANGUAGES
+        C
+    VERSION
+        ${VER_MAJOR}.${VER_MINOR}.${VER_PATCH}
 )
 
-# Windows sources
-set(WIN32_ROOT ${SRC_ROOT}/win32)
-list(
-    APPEND
-    WIN32_SOURCE
+option(BUILD_STATIC "Build as a static library instead of shared?" OFF)
+
+detect_os(IS_WIN IS_OSX IS_LIN IS_BSD)
+
+# configure files
+set(CONFIGURED_OUT_ROOT ${CMAKE_CURRENT_BINARY_DIR}/configured)
+#configure_file(include/glug/power/version.h.in ${CONFIGURED_OUT_ROOT}/include/glug/power/version.h)
+
+include(common_src.cmake)
+
+include(windows.cmake)
+include(osx.cmake)
+include(linux.cmake)
+include(bsd.cmake)
+
+set_compilation_props("${WIN_SOURCE}"    FALSE)
+set_compilation_props("${OSX_SOURCE}"    FALSE)
+set_compilation_props("${LIN_SOURCE}"    FALSE)
+set_compilation_props("${BSD_SOURCE}"    FALSE)
+set_compilation_props("${BINDINGS}"      FALSE)
+
+if (${IS_WIN})
+    set(PLATFORM_SRC  "${WIN_SOURCE}")
+    set(PLATFORM_LIBS "${WIN_LIBS}")
+elseif (${IS_OSX})
+    set(PLATFORM_SRC  "${OSX_SOURCE}")
+    set(PLATFORM_LIBS "${OSX_LIBS}")
+elseif (${IS_LIN})
+
+    set(PLATFORM_SRC  "${LIN_SOURCE}")
+    set(PLATFORM_LIBS "${LIN_LIBS}")
+elseif (${IS_BSD})
+    set(PLATFORM_SRC  "${BSD_SOURCE}")
+    set(PLATFORM_LIBS "${BSD_LIBS}")
+endif()
+
+set_compilation_props("${PLATFORM_SRC}" TRUE)
+
+# set the library type
+set(LIB_TYPE SHARED)
+if (BUILD_STATIC)
+    set(LIB_TYPE STATIC)
+endif()
+
+add_library(
+    glug_power
+    ${LIB_TYPE}
     ${COMMON_SOURCE}
-    ${WIN32_ROOT}/power.c
-    ${WIN32_ROOT}/battery_node.c
+    ${WIN_SOURCE}
+    ${OSX_SOURCE}
+    ${LIN_SOURCE}
+    ${BSD_SOURCE}
+    ${BINDINGS}
 )
 
-# Mac OS sources
-set(MACOS_ROOT ${SRC_ROOT}/macos)
-list(
-    APPEND
-    MACOS_SOURCE
-    ${COMMON_SOURCE}
-    ${MACOS_ROOT}/power.c
-    ${MACOS_ROOT}/battery_node.c)
-
-# linux sources
-set(LINUX_ROOT ${SRC_ROOT}/linux)
-list(
-    APPEND
-    LINUX_SOURCE
-    ${COMMON_SOURCE}
-    ${LINUX_ROOT}/power.c
-    ${LINUX_ROOT}/battery_node.c
-)
-
-add_gluglib(
-    TARGET_NAME  ${PROJECT_NAME}
-    STATIC_BUILD ${BUILD_STATIC}
-    WIN32_SOURCE ${WIN32_SOURCE}
-    MACOS_SOURCE ${MACOS_SOURCE}
-    LINUX_SOURCE ${LINUX_SOURCE}
-    WIN32_LIBS
-    MACOS_LIBS CoreFoundation IOKit
-    LINUX_LIBS
-)
+link_libs(glug_power "${PLATFORM_LIBS}")
+set_export_defs(glug_power ${BUILD_STATIC} ${IS_WIN})
 
 target_include_directories(
-    ${PROJECT_NAME}
+    glug_power
     PUBLIC
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+#        $<BUILD_INTERFACE:${CONFIGURED_OUT_ROOT}/include> # because "version.h" is a configured file
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/common_headers/include>
+    PRIVATE
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/src>
     INTERFACE
         $<INSTALL_INTERFACE:include>
 )
@@ -84,20 +91,31 @@ target_include_directories(
 # install the library
 install(
     TARGETS
-        ${PROJECT_NAME}
+        glug_power
     EXPORT
-        Find${PROJECT_NAME}
+        Find-glug_power
     DESTINATION
         lib
 )
 
-#install the lib's headers
+# install the lib's headers
 install(
     DIRECTORY
         include/
     DESTINATION
         include
+    FILES_MATCHING
+        PATTERN "*"
+        PATTERN "*.in" EXCLUDE
 )
+
+# install the lib's configured version file
+#install(
+#    FILES
+#        ${CONFIGURED_OUT_ROOT}/include/glug/power/version.h
+#    DESTINATION
+#        include/glug/power
+#)
 
 # install the common_headers
 install(
@@ -105,24 +123,24 @@ install(
         common_headers/include/
     DESTINATION
         include
-    FILES_MATCHING PATTERN
-        "*.h"
+    FILES_MATCHING
+        PATTERN "*"
+        PATTERN "*.in$" EXCLUDE
 )
 
 # export the package to be included in other projects
-export(PACKAGE ${PROJECT_NAME})
+export(PACKAGE glug_power)
 export(
     TARGETS
-        ${PROJECT_NAME}
+        glug_power
     FILE
-        ${PROJECT_NAME}-config.cmake
+        glug_power-config.cmake
 )
 
 # install export file
 install(
     EXPORT
-        Find${PROJECT_NAME}
+        Find-glug_power
     DESTINATION
         cmake
 )
-

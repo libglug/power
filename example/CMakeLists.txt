@@ -1,33 +1,45 @@
+cmake_minimum_required(VERSION 3.7)
+
 project(example)
-include(cmake/add_example.cmake)
 
-set(LIB glug_power)
-find_package(${LIB} REQUIRED)
-set(GLUG_TARGET_NAME ${LIB}_test)
-set(GLUG_TARGET_NAME++ ${LIB}_test++)
+find_package(glug_power REQUIRED)
+set(GLUG_TARGET_NAME example-glug_power)
+set(GLUG_TARGET_NAME++ example-glug_power_cpp)
 
-set(INSTALL_PATH example)
+# create simple example with simple dependencies
+function (add_example)
+    set(OPTIONS)
+    set(SINGLE_VALS TARGET_NAME)
+    set(MULTI_VALS SRC LINK_LIBS)
+    cmake_parse_arguments(EXAMPLE "${OPTIONS}" "${SINGLE_VALS}" "${MULTI_VALS}" ${ARGN})
+
+    add_executable(${EXAMPLE_TARGET_NAME} ${EXAMPLE_SRC})
+    target_link_libraries(${EXAMPLE_TARGET_NAME} ${EXAMPLE_LINK_LIBS})
+
+    set_target_properties(
+        ${EXAMPLE_TARGET_NAME}
+        PROPERTIES
+            INSTALL_RPATH "$ORIGIN;@loader_path"
+            BUILD_WITH_INSTALL_RPATH TRUE
+    )
+endfunction()
 
 add_example(
     TARGET_NAME
         ${GLUG_TARGET_NAME}
-    INSTALL_PATH
-        ${INSTALL_PATH}
     SRC
-        main.c
+        c/main.c
     LINK_LIBS
-        ${LIB}
+        glug_power
 )
 
 add_example(
     TARGET_NAME
         ${GLUG_TARGET_NAME++}
-    INSTALL_PATH
-        ${INSTALL_PATH}
     SRC
-        main.cpp
+        c++/main.cpp
     LINK_LIBS
-        ${LIB}
+        glug_power
 )
 
 target_compile_features(
