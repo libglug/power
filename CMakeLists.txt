@@ -1,47 +1,51 @@
-cmake_minimum_required(VERSION 3.0)
-cmake_policy(SET CMP0054 NEW)
+cmake_minimum_required(VERSION 3.7)
+
 project(glug_power_suite)
 
-set(GLUG_LIB_TARGET glug_power)
-option(BUILD_XMPLS "Build the examples?" OFF)
-option(BUILD_TESTS "Build tests?" OFF)
-
-# disable find_package in any subproject for finding this lib
+# disable find_package in any subproject when trying to find the main project library
 macro(find_package)
-    if (NOT "${ARGV0}" STREQUAL ${GLUG_LIB_TARGET})
+    if (NOT "${ARGV0}" STREQUAL glug_power)
         _find_package(${ARGV})
     endif()
 endmacro()
 
 # add the library subproject
-add_subdirectory(${GLUG_LIB_TARGET})
+add_subdirectory(glug_power)
 
-# build and install examples
-if (${BUILD_XMPLS} STREQUAL "ON")
-    add_subdirectory(example)
+# add the "examples" target to build all examples
+add_subdirectory(example EXCLUDE_FROM_ALL)
 
-    # copy the glug lib to the example build dir if it's shared
-    if (NOT ${BUILD_STATIC})
-        add_custom_command(
-            OUTPUT
-                copy_lib POST_BUILD
-            COMMAND
-                ${CMAKE_COMMAND} -E copy
-                    $<TARGET_FILE:${GLUG_LIB_TARGET}> ${CMAKE_CURRENT_BINARY_DIR}/example
-            DEPENDS
-                ${GLUG_LIB_TARGET}
-        )
-        add_custom_target(
-            copy_lib_example
-            ALL
-            DEPENDS
-                copy_lib
-        )
-    endif()
+get_property(
+    EXAMPLE_TARGETS
+    DIRECTORY
+        example
+    PROPERTY
+        BUILDSYSTEM_TARGETS
+)
 
-endif()
+add_custom_target(
+    examples
+    DEPENDS
+        ${EXAMPLE_TARGETS}
+)
 
-if (${BUILD_TESTS})
-    enable_testing()
-    add_subdirectory(test)
-endif()
+# create a custom "install-examples" target to install the examples without being part of ALL
+add_custom_target(
+    install-examples
+    DEPENDS
+        ${EXAMPLE_TARGETS}
+)
+
+foreach(EXAMPLE_TARGET IN LISTS EXAMPLE_TARGETS)
+    add_custom_command(
+        TARGET
+            install-examples
+        COMMAND
+            ${CMAKE_COMMAND} -E copy
+                $<TARGET_FILE:${EXAMPLE_TARGET}>
+                ${CMAKE_INSTALL_PREFIX}/examples/$<TARGET_FILE_NAME:${EXAMPLE_TARGET}>
+    )
+endforeach()
+
+enable_testing()
+include(test/tests.cmake)
