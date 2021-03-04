@@ -53,14 +53,12 @@ build_script:
   - cmd: >-
         cmake
         -DCMAKE_BUILD_TYPE=RELEASE
-        -DBUILD_WITH_JNI=internal
         -DCMAKE_INSTALL_PREFIX:PATH=%CD%/glug_power-install
         -G"%GENERATOR%" %C_COMPILER% %CXX_COMPILER% %COMPILE_FLAGS%
         ..
   - sh: >-
         cmake
         -DCMAKE_BUILD_TYPE=RELEASE
-        -DBUILD_WITH_JNI=internal
         -DCMAKE_INSTALL_PREFIX:PATH=$(pwd)/glug_power-install
         -G"$GENERATOR" ${C_COMPILER} ${CXX_COMPILER} ${COMPILE_FLAGS}
         ..

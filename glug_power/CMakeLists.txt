@@ -24,7 +24,7 @@ detect_os(IS_WIN IS_OSX IS_LIN IS_BSD)
 
 # configure files
 set(CONFIGURED_OUT_ROOT ${CMAKE_CURRENT_BINARY_DIR}/configured)
-#configure_file(include/glug/power/version.h.in ${CONFIGURED_OUT_ROOT}/include/glug/power/version.h)
+configure_file(include/glug/power/version.h.in ${CONFIGURED_OUT_ROOT}/include/glug/power/version.h)
 
 include(common_src.cmake)
 
@@ -80,7 +80,7 @@ target_include_directories(
     glug_power
     PUBLIC
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
-#        $<BUILD_INTERFACE:${CONFIGURED_OUT_ROOT}/include> # because "version.h" is a configured file
+        $<BUILD_INTERFACE:${CONFIGURED_OUT_ROOT}/include> # because "version.h" is a configured file
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/common_headers/include>
     PRIVATE
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/src>
@@ -110,12 +110,12 @@ install(
 )
 
 # install the lib's configured version file
-#install(
-#    FILES
-#        ${CONFIGURED_OUT_ROOT}/include/glug/power/version.h
-#    DESTINATION
-#        include/glug/power
-#)
+install(
+    FILES
+        ${CONFIGURED_OUT_ROOT}/include/glug/power/version.h
+    DESTINATION
+        include/glug/power
+)
 
 # install the common_headers
 install(
