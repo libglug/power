@@ -1,4 +1,5 @@
 cmake_minimum_required(VERSION 3.7)
+include(CMakePackageConfigHelpers)
 
 include(cmake/version.cmake)
 
@@ -73,6 +74,8 @@ add_library(
     ${BINDINGS}
 )
 
+add_library(glug::power ALIAS glug_power)
+
 link_libs(glug_power "${PLATFORM_LIBS}")
 set_export_defs(glug_power ${BUILD_STATIC} ${IS_WIN})
 
@@ -88,14 +91,12 @@ target_include_directories(
         $<INSTALL_INTERFACE:include>
 )
 
-# install the library
-install(
-    TARGETS
-        glug_power
-    EXPORT
-        Find-glug_power
-    DESTINATION
-        lib
+set(PROJECT_CONFIG_FILE glug_power-config.cmake)
+configure_package_config_file(
+    cmake/config.cmake.in
+    ${PROJECT_CONFIG_FILE}
+    INSTALL_DESTINATION
+        cmake
 )
 
 # install the lib's headers
@@ -128,19 +129,38 @@ install(
         PATTERN "*.in$" EXCLUDE
 )
 
-# export the package to be included in other projects
-export(PACKAGE glug_power)
-export(
+# install the library and its exports
+install(
     TARGETS
         glug_power
-    FILE
-        glug_power-config.cmake
+    EXPORT
+        glug_power-targets
+    RUNTIME DESTINATION
+        lib
+    LIBRARY DESTINATION
+        lib
+    ARCHIVE DESTINATION
+        lib
 )
 
-# install export file
+# export the package to be included in other projects
 install(
     EXPORT
-        Find-glug_power
+        glug_power-targets
+    FILE
+        glug_power-targets.cmake
+    NAMESPACE
+        glug::
     DESTINATION
         cmake
 )
+export(
+    EXPORT
+        glug_power-targets
+    FILE
+        glug_power-config.cmake
+    NAMESPACE
+        glug::
+)
+
+export(PACKAGE glug_power)

@@ -30,7 +30,7 @@ add_example(
     SRC
         c/main.c
     LINK_LIBS
-        glug_power
+        glug::power
 )
 
 add_example(
@@ -39,7 +39,7 @@ add_example(
     SRC
         c++/main.cpp
     LINK_LIBS
-        glug_power
+        glug::power
 )
 
 target_compile_features(

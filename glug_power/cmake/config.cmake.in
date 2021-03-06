@@ -1,0 +1,9 @@
+@PACKAGE_INIT@
+
+get_filename_component(glug_power_CMAKE_DIR "${CMAKE_CURRENT_LIST_FILE}" PATH)
+
+if(NOT TARGET glug::power)
+    include("${glug_power_CMAKE_DIR}/glug_power-targets.cmake")
+endif()
+
+check_required_components(glug_power)
