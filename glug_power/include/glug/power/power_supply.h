@@ -4,8 +4,10 @@
 enum glug_power_supply
 {
     glug_power_unknown = -1,
+    glug_power_none,
     glug_power_ac,
     glug_power_battery,
+    glug_power_ups
 };
 
 #ifdef GLUG_USE_TYPEDEFS
