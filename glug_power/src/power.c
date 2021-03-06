@@ -16,7 +16,7 @@ enum glug_battery_status glug_power_battery_state(void)
 {
     struct battery_list batteries = battery_list();
     enum glug_battery_status status = glug_battery_unknown;
-    int ac = has_ac();
+    glug_bool ac = has_ac();
 
     if (!batteries.count && ac)
         status = glug_battery_none;
