@@ -29,6 +29,15 @@ add_custom_target(
         ${EXAMPLE_TARGETS}
 )
 
+# copy the library to the example build directory
+add_custom_command(
+    TARGET
+        examples POST_BUILD
+    COMMAND
+        ${CMAKE_COMMAND} -E copy_if_different
+            $<TARGET_FILE:glug_power> example
+)
+
 # create a custom "install-examples" target to install the examples without being part of ALL
 add_custom_target(
     install-examples
