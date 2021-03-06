@@ -2,13 +2,6 @@ cmake_minimum_required(VERSION 3.7)
 
 project(glug_power_suite)
 
-# disable find_package in any subproject when trying to find the main project library
-macro(find_package)
-    if (NOT "${ARGV0}" STREQUAL glug_power)
-        _find_package(${ARGV})
-    endif()
-endmacro()
-
 # add the library subproject
 add_subdirectory(glug_power)
 
@@ -30,13 +23,20 @@ add_custom_target(
 )
 
 # copy the library to the example build directory
+add_custom_target(
+    copy_lib_to_examples
+)
 add_custom_command(
     TARGET
-        examples POST_BUILD
+        copy_lib_to_examples POST_BUILD
     COMMAND
         ${CMAKE_COMMAND} -E copy_if_different
-            $<TARGET_FILE:glug_power> example
+            $<TARGET_FILE:glug::power> example
 )
+add_dependencies(examples copy_lib_to_examples)
+foreach(EXAMPLE_TARGET IN LISTS EXAMPLE_TARGETS)
+    add_dependencies(${EXAMPLE_TARGET} copy_lib_to_examples)
+endforeach()
 
 # create a custom "install-examples" target to install the examples without being part of ALL
 add_custom_target(
@@ -55,6 +55,13 @@ foreach(EXAMPLE_TARGET IN LISTS EXAMPLE_TARGETS)
                 ${CMAKE_INSTALL_PREFIX}/examples/$<TARGET_FILE_NAME:${EXAMPLE_TARGET}>
     )
 endforeach()
+add_custom_command(
+    TARGET
+        install-examples
+    COMMAND
+        ${CMAKE_COMMAND} -E copy_if_different
+            $<TARGET_FILE:glug::power> ${CMAKE_INSTALL_PREFIX}/examples
+)
 
 enable_testing()
 include(test/tests.cmake)
