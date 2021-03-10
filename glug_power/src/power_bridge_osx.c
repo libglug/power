@@ -1,5 +1,6 @@
 #include "power_platform.h"
 
+#include "battery_state_t.h"
 #include "iops/iops.h"
 
 glug_bool has_ac(void)
@@ -7,27 +8,30 @@ glug_bool has_ac(void)
     return ac_connected();
 }
 
-size_t battery_count(void)
+void battery_count(size_t *count)
 {
-    return batteries_count();
+    struct battery_info batteries;
+    battery_info(&batteries);
+
+    *count = batteries.count;
 }
 
-size_t batteries_charging(const struct battery_list *list)
+void battery_state(struct battery_state *state)
 {
-    return ncharging(list);
+    struct battery_info batteries;
+    battery_info(&batteries);
+
+    state->count     = batteries.count;
+    state->ncharging = batteries.ncharging;
+    state->ncharged  = batteries.ncharged;
 }
 
-size_t batteries_charged(const struct battery_list *list)
+int8_t battery_pct()
 {
-    return ncharged(list);
+    return (int8_t)battery_life_percent();
 }
 
-int8_t avg_battery_pct(const struct battery_list *list)
+int64_t battery_time()
 {
-    return (int8_t)battery_life_percent(list);
-}
-
-int64_t max_battery_time(const struct battery_list *list)
-{
-    return (int64_t)(int32_t)battery_life_time(list);
+    return (int64_t)battery_life_time();
 }

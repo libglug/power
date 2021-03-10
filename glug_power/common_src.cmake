@@ -15,9 +15,7 @@ set(
 
     src/power.c
     src/power_platform.h
-    src/battery_platform.h
-    src/battery_list.h
-    src/battery_list.c
+    src/battery_state_t.h
 )
 
 set(
