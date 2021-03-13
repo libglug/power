@@ -1,4 +1,4 @@
-#include "../power_platform.h"
+#include "../power_bridge.h"
 #include "../battery_platform.h"
 #include "../battery_list.h"
 #include <glug/power/battery_status.h>

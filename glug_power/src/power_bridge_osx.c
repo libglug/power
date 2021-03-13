@@ -1,4 +1,4 @@
-#include "power_platform.h"
+#include "power_bridge.h"
 
 #include "battery_state_t.h"
 #include "iops/iops.h"

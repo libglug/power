@@ -1,5 +1,5 @@
 #include <glug/power.h>
-#include "power_platform.h"
+#include "power_bridge.h"
 
 #include <stdint.h>
 #include <stddef.h>

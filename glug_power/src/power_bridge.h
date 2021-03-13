@@ -1,5 +1,5 @@
-#ifndef GLUG_POWER_PLAT_H
-#define GLUG_POWER_PLAT_H
+#ifndef GLUG_POWER_BRIDGE_H
+#define GLUG_POWER_BRIDGE_H
 
 #include <stdint.h>
 #include <stddef.h>
@@ -15,4 +15,4 @@ GLUG_LIB_LOCAL void         battery_state(struct battery_state *);
 GLUG_LIB_LOCAL int8_t       battery_pct (void);
 GLUG_LIB_LOCAL int64_t      battery_time(void);
 
-#endif // GLUG_POWER_PLAT_H
+#endif // GLUG_POWER_BRIDGE_H
