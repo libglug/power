@@ -51,10 +51,10 @@ void battery_info(struct battery_info *batinfo)
 struct battery_life
 {
     int64_t total_capacity;
-    size_t  nbatts;
+    size_t  nbats;
 };
 
-static void get_avg_battery_life(const CFDictionaryRef source, void *context)
+static void get_battery_life(const CFDictionaryRef source, void *context)
 {
     struct battery_life *batt_life = context;
 
@@ -70,20 +70,20 @@ static void get_avg_battery_life(const CFDictionaryRef source, void *context)
         if (max_capacity > 0)
             batt_life->total_capacity += capacity * 100 / max_capacity;
 
-        ++batt_life->nbatts;
+        ++batt_life->nbats;
     }
 }
 
 int8_t battery_life_percent(void)
 {
     struct battery_life batt_life = { 0, 0 };
-    iterate_batteries(get_avg_battery_life, &batt_life);
+    iterate_batteries(get_battery_life, &batt_life);
 
-    if (batt_life.nbatts) return (int8_t)(batt_life.total_capacity * 1.0 / batt_life.nbatts);
+    if (batt_life.nbats) return (int8_t)(batt_life.total_capacity * 1.0 / batt_life.nbats);
     return (int8_t)-1;
 }
 
-static void get_max_battery_time(const CFDictionaryRef source, void *context)
+static void get_battery_time(const CFDictionaryRef source, void *context)
 {
     int32_t *remaining = context;
 
@@ -108,7 +108,7 @@ static void get_max_battery_time(const CFDictionaryRef source, void *context)
 int32_t battery_life_time(void)
 {
     int32_t time_remaining = -1;
-    iterate_batteries(get_max_battery_time, &time_remaining);
+    iterate_batteries(get_battery_life, &time_remaining);
 
     return time_remaining;
 }

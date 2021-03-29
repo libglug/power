@@ -2,10 +2,8 @@ set(
     LIN_SOURCE
     src/power_bridge_linux.c
     src/sysfs/sysfs.h
-    src/sysfs/sysfs.c
-
-    src/linux/power.c
-    src/linux/battery_node.c
+    src/sysfs/ac.c
+    src/sysfs/battery.c
 )
 
 set(

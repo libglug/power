@@ -8,13 +8,17 @@
 
 struct battery_list;
 
+struct battery_info
+{
+    size_t count;
+    size_t ncharging;
+    size_t ncharged;
+};
+
 GLUG_LIB_LOCAL glug_bool ac_connected(void);
-GLUG_LIB_LOCAL size_t    batteries_count(void);
+GLUG_LIB_LOCAL void      battery_info(struct battery_info *);
 
-GLUG_LIB_LOCAL size_t    ncharging(const struct battery_list *);
-GLUG_LIB_LOCAL size_t    ncharged(const struct battery_list *);
-
-GLUG_LIB_LOCAL uint8_t   battery_life_percent(const struct battery_list *);
-GLUG_LIB_LOCAL uint32_t  battery_life_time(const struct battery_list *);
+GLUG_LIB_LOCAL int8_t   battery_life_percent(void);
+GLUG_LIB_LOCAL int32_t  battery_life_time(void);
 
 #endif // GLUG_SYSFS_H
