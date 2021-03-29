@@ -5,13 +5,20 @@
 
 #include <glug/bool.h>
 
+enum charge_state
+{
+    cs_unknown = -1,
+    cs_none,
+    cs_discharging,
+    cs_charging,
+    cs_charged,
+};
+
 GLUG_LIB_LOCAL glug_bool ac_connected(void);
 GLUG_LIB_LOCAL glug_bool battery_connected(void);
 
-GLUG_LIB_LOCAL glug_bool battery_charging(void);
-GLUG_LIB_LOCAL glug_bool battery_charged(void);
-
-GLUG_LIB_LOCAL uint8_t   battery_life_percent(void);
-GLUG_LIB_LOCAL uint32_t  battery_life_time(void);
+GLUG_LIB_LOCAL enum charge_state battery_charge_state(void);
+GLUG_LIB_LOCAL int8_t   battery_life_percent(void);
+GLUG_LIB_LOCAL int32_t  battery_life_time(void);
 
 #endif // GLUG_SYSTEM_POWER_STATUS_H

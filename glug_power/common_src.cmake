@@ -14,10 +14,8 @@ set(
     include/glug/power/power_supply.h
 
     src/power.c
-    src/power_platform.h
-    src/battery_platform.h
-    src/battery_list.h
-    src/battery_list.c
+    src/power_bridge.h
+    src/battery_state_t.h
 )
 
 set(
