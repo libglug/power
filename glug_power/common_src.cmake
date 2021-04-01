@@ -12,6 +12,7 @@ set(
     include/glug/power/power.h
     include/glug/power/battery_status.h
     include/glug/power/power_supply.h
+    include/glug/power/version.h.in
 
     src/power.c
     src/power_bridge.h
