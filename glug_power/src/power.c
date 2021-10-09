@@ -42,12 +42,12 @@ enum glug_battery_status glug_power_battery_state(void)
     return status;
 }
 
-int8_t glug_power_battery_pct(void)
+int8_t glug_power_battery_level(void)
 {
-    return battery_pct();
+    return battery_level();
 }
 
-int64_t glug_power_battery_time(void)
+int32_t glug_power_battery_time(void)
 {
     return battery_time();
 }

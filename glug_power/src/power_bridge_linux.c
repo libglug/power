@@ -26,12 +26,12 @@ void battery_state(struct battery_state *state)
     state->ncharged  = batteries.ncharged;
 }
 
-int8_t battery_pct(void)
+int8_t battery_level(void)
 {
     return battery_life_percent();
 }
 
-int64_t battery_time(void)
+int32_t battery_time(void)
 {
     return battery_life_time();
 }
