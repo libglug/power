@@ -3,7 +3,9 @@
 #include "battery_state_t.h"
 #include "sysfs/sysfs.h"
 
-glug_bool has_ac(void)
+#include <glug/bool_t.h>
+
+glug_bool_t has_ac(void)
 {
     return ac_connected();
 }

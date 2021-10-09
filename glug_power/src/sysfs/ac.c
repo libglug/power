@@ -2,9 +2,11 @@
 
 #include <stdio.h>
 
+#include <glug/bool_t.h>
+
 static const char *ac_online_file = "/sys/class/power_supply/ACAD/online";
 
-glug_bool ac_connected(void)
+glug_bool_t ac_connected(void)
 {
     long val = -1;
     FILE *fonline = fopen(ac_online_file, "r");

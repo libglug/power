@@ -4,7 +4,7 @@
 #include <stdint.h>
 #include <stddef.h>
 
-#include <glug/bool.h>
+#include <glug/bool_t.h>
 
 struct battery_info
 {
@@ -13,7 +13,7 @@ struct battery_info
     size_t ncharged;
 };
 
-GLUG_LIB_LOCAL glug_bool    ac_connected(void);
+GLUG_LIB_LOCAL glug_bool_t  ac_connected(void);
 GLUG_LIB_LOCAL void         battery_info(struct battery_info *);
 
 GLUG_LIB_LOCAL int8_t       battery_life_percent(void);

@@ -2,7 +2,7 @@ set(
     COMMON_SOURCE
     common_headers/include/glug/allocator_t.h
     common_headers/include/glug/std_allocator.inl
-    common_headers/include/glug/bool.h
+    common_headers/include/glug/bool_t.h
     common_headers/include/glug/extern.h
     common_headers/include/glug/import.h
     common_headers/include/glug/os.h
