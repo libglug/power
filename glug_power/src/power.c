@@ -4,6 +4,7 @@
 #include <stdint.h>
 #include <stddef.h>
 
+#include <glug/bool_t.h>
 #include "battery_state_t.h"
 
 enum glug_power_supply glug_power_active_supply(void)
@@ -23,7 +24,7 @@ enum glug_battery_status glug_power_battery_state(void)
     battery_state(&batteries);
 
     enum glug_battery_status status = glug_battery_unknown;
-    glug_bool ac = has_ac();
+    glug_bool_t ac = has_ac();
 
     if (!batteries.count && ac)
         status = glug_battery_none;
@@ -42,12 +43,12 @@ enum glug_battery_status glug_power_battery_state(void)
     return status;
 }
 
-int8_t glug_power_battery_pct(void)
+int8_t glug_power_battery_level(void)
 {
-    return battery_pct();
+    return battery_level();
 }
 
-int64_t glug_power_battery_time(void)
+int32_t glug_power_battery_time(void)
 {
     return battery_time();
 }

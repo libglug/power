@@ -3,7 +3,9 @@
 #include "battery_state_t.h"
 #include "iops/iops.h"
 
-glug_bool has_ac(void)
+#include <glug/bool_t.h>
+
+glug_bool_t has_ac(void)
 {
     return ac_connected();
 }
@@ -26,12 +28,12 @@ void battery_state(struct battery_state *state)
     state->ncharged  = batteries.ncharged;
 }
 
-int8_t battery_pct()
+int8_t battery_level()
 {
     return (int8_t)battery_life_percent();
 }
 
-int64_t battery_time()
+int32_t battery_time()
 {
-    return (int64_t)battery_life_time();
+    return battery_life_time();
 }

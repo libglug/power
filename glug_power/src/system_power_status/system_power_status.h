@@ -3,7 +3,7 @@
 
 #include <stdint.h>
 
-#include <glug/bool.h>
+#include <glug/bool_t.h>
 
 enum charge_state
 {
@@ -14,8 +14,8 @@ enum charge_state
     cs_charged,
 };
 
-GLUG_LIB_LOCAL glug_bool ac_connected(void);
-GLUG_LIB_LOCAL glug_bool battery_connected(void);
+GLUG_LIB_LOCAL glug_bool_t ac_connected(void);
+GLUG_LIB_LOCAL glug_bool_t battery_connected(void);
 
 GLUG_LIB_LOCAL enum charge_state battery_charge_state(void);
 GLUG_LIB_LOCAL int8_t   battery_life_percent(void);

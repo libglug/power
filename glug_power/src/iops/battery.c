@@ -88,15 +88,18 @@ static void get_battery_time(const CFDictionaryRef source, void *context)
     int32_t *remaining = context;
 
     CFBooleanRef bat_charging = CFDictionaryGetValue(source, CFSTR(kIOPSIsChargingKey));
-    CFNumberRef time_ref      = CFDictionaryGetValue(source, CFSTR(kIOPSTimeToEmptyKey));
+    CFBooleanRef bat_charged  = CFDictionaryGetValue(source, CFSTR(kIOPSIsChargedKey));
+    CFNumberRef  time_ref     = CFDictionaryGetValue(source, CFSTR(kIOPSTimeToEmptyKey));
 
-    if (bat_charging && CFBooleanGetValue(bat_charging)) return;
+    if (CFBooleanGetValue(bat_charging)) return;
 
     if (time_ref)
     {
         int32_t source_time;
         CFNumberGetValue(time_ref, kCFNumberSInt32Type, &source_time);
 
+        // fully charged batteries with AC still report 0 time to empty
+        if (!source_time && bat_charged) return;
         if (source_time >= 0)
         {
             source_time *= 60;
@@ -108,7 +111,7 @@ static void get_battery_time(const CFDictionaryRef source, void *context)
 int32_t battery_life_time(void)
 {
     int32_t time_remaining = -1;
-    iterate_batteries(get_battery_life, &time_remaining);
+    iterate_batteries(get_battery_time, &time_remaining);
 
     return time_remaining;
 }
