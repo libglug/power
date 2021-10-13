@@ -6,7 +6,7 @@
 
 #include <glug/power/power.h>
 
-void before_each(void)
+static void before_each(void)
 {
     set_ac(glug_true);
     set_batteries(0);
@@ -16,7 +16,7 @@ void before_each(void)
     set_battery_time(4 * 60 * 60);
 }
 
-void test_has_ac(void)
+static void test_has_ac(void)
 {
     glug_bool_t has_ac;
 
@@ -31,7 +31,7 @@ void test_has_ac(void)
     CU_ASSERT_EQUAL(has_ac, glug_false);
 }
 
-void test_power_supply(void)
+static void test_power_supply(void)
 {
     enum glug_power_supply supply;
 
@@ -44,9 +44,24 @@ void test_power_supply(void)
     set_ac(glug_false);
     supply = glug_power_active_supply();
     CU_ASSERT_EQUAL(supply, glug_power_unknown);
+
+    // no A/C, batteries => battery
+    set_ac(glug_false);
+    set_batteries(2);
+    set_charging_batteries(1);
+    set_charged_batteries(0);
+    supply = glug_power_active_supply();
+    CU_ASSERT_EQUAL(supply, glug_power_battery);
+
+    set_ac(glug_false);
+    set_batteries(2);
+    set_charging_batteries(0);
+    set_charged_batteries(1);
+    supply = glug_power_active_supply();
+    CU_ASSERT_EQUAL(supply, glug_power_battery);
 }
 
-void test_battery_status(void)
+static void test_battery_status(void)
 {
     enum glug_battery_status status;
 
@@ -85,7 +100,7 @@ void test_battery_status(void)
     CU_ASSERT_EQUAL(status, glug_battery_charged);
 }
 
-void test_battery_level(void)
+static void test_battery_level(void)
 {
     int8_t level, expected;
 
@@ -105,7 +120,7 @@ void test_battery_level(void)
     CU_ASSERT_EQUAL(level, expected);
 }
 
-void test_battery_time(void)
+static void test_battery_time(void)
 {
     int32_t time, expected;
 
@@ -125,6 +140,7 @@ int main(void)
     CU_pSuite suite = create_suite("power", before_each, NULL);
     if (!suite) return CU_get_error();
 
+    CU_add_test(suite, "has A/C", test_has_ac);
     CU_add_test(suite, "power supply", test_power_supply);
     CU_add_test(suite, "battery status", test_battery_status);
     CU_add_test(suite, "battery level", test_battery_level);

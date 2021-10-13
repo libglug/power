@@ -1,10 +1,10 @@
 #include <glug/power/power.h>
-#include "power_bridge.h"
 
 #include <stdint.h>
 #include <stddef.h>
 
 #include <glug/bool_t.h>
+#include "power_bridge.h"
 #include "battery_state_t.h"
 
 glug_bool_t glug_power_has_ac(void)
