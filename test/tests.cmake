@@ -94,6 +94,8 @@ list(
     TEST_TARGETS
 )
 
+add_test_by_conf(${CMAKE_CURRENT_LIST_DIR} confs/power.cmake)
+
 foreach(TEST_TARGET IN LISTS TEST_TARGETS)
     add_custom_command(
         TARGET

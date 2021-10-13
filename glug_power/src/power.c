@@ -1,4 +1,4 @@
-#include <glug/power.h>
+#include <glug/power/power.h>
 #include "power_bridge.h"
 
 #include <stdint.h>
