@@ -3,10 +3,10 @@
 
 #include <suites/create_suite.h>
 #include <asserts/battery_state.h>
-
-#include <../src/battery_state_t.h>
-#include <../src/power_bridge.h>
 #include <mocks/sysctl/sysctl.h>
+
+#include <src/battery_state_t.h>
+#include <src/power_bridge.h>
 
 void before_each(void)
 {
@@ -31,7 +31,7 @@ void test_has_ac(void)
     CU_ASSERT(!ac);
 }
 
-void test_battery_count()
+void test_battery_count(void)
 {
     size_t count = 0;
 

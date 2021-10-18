@@ -164,3 +164,6 @@ export(
 )
 
 export(PACKAGE glug_power)
+
+enable_testing()
+add_subdirectory(tests)
