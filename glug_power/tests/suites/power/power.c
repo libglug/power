@@ -16,24 +16,34 @@ void before_each(void)
     set_battery_time(4 * 60 * 60);
 }
 
-void after_each(void)
+void test_has_ac(void)
 {
+    glug_bool_t has_ac;
 
+    // has connected A/C
+    set_ac(glug_true);
+    has_ac = glug_power_has_ac();
+    CU_ASSERT_EQUAL(has_ac, glug_true);
+
+    // doesn't have connected A/C
+    set_ac(glug_false);
+    has_ac = glug_power_has_ac();
+    CU_ASSERT_EQUAL(has_ac, glug_false);
 }
 
 void test_power_supply(void)
 {
     enum glug_power_supply supply;
 
+    // has A/C => A/C
     set_ac(glug_true);
     supply = glug_power_active_supply();
     CU_ASSERT_EQUAL(supply, glug_power_ac);
 
+    // no A/C, no batteries => unknown
     set_ac(glug_false);
     supply = glug_power_active_supply();
     CU_ASSERT_EQUAL(supply, glug_power_unknown);
-
-    // add case here for all dead batteries
 }
 
 void test_battery_status(void)
@@ -112,7 +122,7 @@ void test_battery_time(void)
 
 int main(void)
 {
-    CU_pSuite suite = create_suite("power", before_each, after_each);
+    CU_pSuite suite = create_suite("power", before_each, NULL);
     if (!suite) return CU_get_error();
 
     CU_add_test(suite, "power supply", test_power_supply);
