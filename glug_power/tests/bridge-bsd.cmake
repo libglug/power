@@ -1,6 +1,7 @@
-set(TEST_TARGET "bridge-bsd")
+set(TEST_TARGET "bridge_bsd")
 
-set(
+list(
+    APPEND
     TEST_SOURCE
     suites/bridge/bsd.c
     mocks/sysctl/sysctl.h

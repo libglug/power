@@ -3,6 +3,7 @@ cmake_minimum_required(VERSION 3.7)
 project(glug_power_suite)
 
 # add the library subproject
+enable_testing()
 add_subdirectory(glug_power)
 
 # add the "examples" target to build all examples

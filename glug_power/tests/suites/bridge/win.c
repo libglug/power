@@ -3,7 +3,7 @@
 
 #include <suites/create_suite.h>
 #include <asserts/battery_state.h>
-#include <mocks/sysctl/sysctl.h>
+#include <mocks/system_power_status/system_power_status.h>
 
 #include <src/battery_state_t.h>
 #include <src/power_bridge.h>
@@ -108,7 +108,7 @@ static void test_battery_time(void)
 
 int main(void)
 {
-    CU_pSuite suite = create_suite("bsd bridge", before_each, NULL);
+    CU_pSuite suite = create_suite("windows bridge", before_each, NULL);
     if (!suite) return CU_get_error();
 
     CU_add_test(suite, "has A/C", test_has_ac);

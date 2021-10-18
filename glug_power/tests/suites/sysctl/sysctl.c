@@ -6,12 +6,12 @@
 
 #include <src/sysctl/sysctl.h>
 
-void before_each(void)
+static void before_each(void)
 {
     clear_sysctl();
 }
 
-void test_has_ac(void)
+static void test_has_ac(void)
 {
     glug_bool_t ac = glug_false;
 
@@ -31,7 +31,7 @@ void test_has_ac(void)
     CU_ASSERT(!ac);
 }
 
-void test_battery_count(void)
+static void test_battery_count(void)
 {
     glug_bool_t has_batts = glug_false;
 
@@ -56,7 +56,7 @@ void test_battery_count(void)
     CU_ASSERT(!has_batts);
 }
 
-void test_battery_state(void)
+static void test_battery_state(void)
 {
     enum charge_state state, expected;
     set_battery_units(1, 1);
@@ -99,7 +99,7 @@ void test_battery_state(void)
     CU_ASSERT_EQUAL(state, expected);
 }
 
-void test_battery_level(void)
+static void test_battery_level(void)
 {
     int32_t life, expected;
 
@@ -121,7 +121,7 @@ void test_battery_level(void)
     CU_ASSERT_EQUAL(life, -1);
 }
 
-void test_battery_time(void)
+static void test_battery_time(void)
 {
     int32_t time, expected;
 

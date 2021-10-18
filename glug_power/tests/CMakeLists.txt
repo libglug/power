@@ -84,6 +84,7 @@ list(
 )
 
 add_test_by_conf(sysctl.cmake)
+add_test_by_conf(bridge-win.cmake)
 add_test_by_conf(bridge-bsd.cmake)
 add_test_by_conf(power.cmake)
 

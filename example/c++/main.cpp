@@ -6,6 +6,7 @@ using namespace std;
 
 int main()
 {
+    cout << boolalpha << "A/C power connected: " << glug_power_has_ac() << endl;
     cout << "power supply: " << glug_power_active_supply() << endl;
     cout << "battery state: " << glug_power_battery_state() << endl;
     cout << "battery %: " << static_cast<int>(glug_power_battery_level()) << endl;
