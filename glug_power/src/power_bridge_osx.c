@@ -30,7 +30,7 @@ void battery_state(struct battery_state *state)
 
 int8_t battery_level()
 {
-    return (int8_t)battery_life_percent();
+    return battery_life_percent();
 }
 
 int32_t battery_time()

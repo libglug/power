@@ -1,5 +1,5 @@
 # define OS variables
-function(detect_os IS_WIN IS_OSX IS_LIN IS_BSD)
+function(detect_os IS_WIN IS_OSX IS_LIN IS_BSD IS_HAIKU)
     set(WIN FALSE)
     set(OSX FALSE)
     set(LIN FALSE)
@@ -21,10 +21,15 @@ function(detect_os IS_WIN IS_OSX IS_LIN IS_BSD)
 
         set(BSD TRUE)
 
+    elseif ("${CMAKE_SYSTEN_NAME}" STREQUAL "Haiku")
+
+        set(HAIKU TRUE)
+
     endif()
 
-    set(${IS_WIN} ${WIN} PARENT_SCOPE)
-    set(${IS_OSX} ${OSX} PARENT_SCOPE)
-    set(${IS_LIN} ${LIN} PARENT_SCOPE)
-    set(${IS_BSD} ${BSD} PARENT_SCOPE)
+    set(${IS_WIN}   ${WIN}   PARENT_SCOPE)
+    set(${IS_OSX}   ${OSX}   PARENT_SCOPE)
+    set(${IS_LIN}   ${LIN}   PARENT_SCOPE)
+    set(${IS_BSD}   ${BSD}   PARENT_SCOPE)
+    set(${IS_HAIKU} ${HAIKU} PARENT_SCOPE)
 endfunction()

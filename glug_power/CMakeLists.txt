@@ -21,7 +21,7 @@ project(
 
 option(BUILD_STATIC "Build as a static library instead of shared?" OFF)
 
-detect_os(IS_WIN IS_OSX IS_LIN IS_BSD)
+detect_os(IS_WIN IS_OSX IS_LIN IS_BSD IS_HAIKU)
 
 # configure files
 set(CONFIGURED_OUT_ROOT ${CMAKE_CURRENT_BINARY_DIR}/configured)
@@ -33,13 +33,17 @@ include(windows.cmake)
 include(osx.cmake)
 include(linux.cmake)
 include(bsd.cmake)
+include(haiku.cmake)
+
+set(NULL_SOURCE power_bridge_null.c)
 
 set_compilation_props("${BINDINGS}"     FALSE)
 set_compilation_props("${WIN_SOURCE}"   FALSE)
 set_compilation_props("${OSX_SOURCE}"   FALSE)
 set_compilation_props("${LIN_SOURCE}"   FALSE)
 set_compilation_props("${BSD_SOURCE}"   FALSE)
-set_compilation_props("${BINDINGS}"     FALSE)
+set_compilation_props("${HAIKU_SOURCE}" FALSE)
+set_compilation_props("${NULL_SOURCE}"  FALSE)
 
 if (${IS_WIN})
     set(PLATFORM_SRC  "${WIN_SOURCE}")
@@ -54,6 +58,12 @@ elseif (${IS_LIN})
 elseif (${IS_BSD})
     set(PLATFORM_SRC  "${BSD_SOURCE}")
     set(PLATFORM_LIBS "${BSD_LIBS}")
+elseif (${IS_HAIKU})
+    set(PLATFORM_SRC  "${HAIKU_SOURCE}")
+    set(PLATFORM_LIBS "${HAIKU_LIBS}")
+else ()
+    set(PLATFORM_SRC  "${NULL_SOURCE}")
+    set(PLATFORM_LIBS "${NULL_LIBS}")
 endif()
 
 set_compilation_props("${PLATFORM_SRC}" TRUE)
@@ -72,6 +82,7 @@ add_library(
     ${OSX_SOURCE}
     ${LIN_SOURCE}
     ${BSD_SOURCE}
+    ${HAIKU_SOURCE}
     ${BINDINGS}
 )
 
