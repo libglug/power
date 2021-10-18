@@ -38,6 +38,8 @@ function(add_test_by_conf TEST_ROOT TEST_CONF)
         ${TEST_MOCK_SOURCE}
         ${TEST_ROOT}/utils/suites/create_suite.h
         ${TEST_ROOT}/utils/suites/create_suite.c
+        ${TEST_ROOT}/utils/asserts/battery_state.h
+        ${TEST_ROOT}/utils/asserts/battery_state.c
     )
 
     target_include_directories(
@@ -94,6 +96,8 @@ list(
     TEST_TARGETS
 )
 
+add_test_by_conf(${CMAKE_CURRENT_LIST_DIR} confs/sysctl.cmake)
+add_test_by_conf(${CMAKE_CURRENT_LIST_DIR} confs/bridge-bsd.cmake)
 add_test_by_conf(${CMAKE_CURRENT_LIST_DIR} confs/power.cmake)
 
 foreach(TEST_TARGET IN LISTS TEST_TARGETS)
