@@ -2,9 +2,9 @@
 #include <CUnit/Assert.h>
 
 #include <suites/create_suite.h>
+#include <mocks/power_bridge.h>
 
 #include <glug/power/power.h>
-#include <mocks/power_bridge.h>
 
 void before_each(void)
 {

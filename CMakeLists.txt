@@ -62,6 +62,3 @@ add_custom_command(
         ${CMAKE_COMMAND} -E copy_if_different
             $<TARGET_FILE:glug::power> ${CMAKE_INSTALL_PREFIX}/examples
 )
-
-enable_testing()
-include(test/tests.cmake)

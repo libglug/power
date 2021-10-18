@@ -2,9 +2,9 @@
 #include <CUnit/Assert.h>
 
 #include <suites/create_suite.h>
-
-#include <../src/sysctl/sysctl.h>
 #include <mocks/sys/sysctl.h>
+
+#include <src/sysctl/sysctl.h>
 
 void before_each(void)
 {
