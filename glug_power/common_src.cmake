@@ -21,4 +21,8 @@ set(
 
 set(
     BINDINGS
+    include/glug/power/bindings/c++/power.hpp
+    include/glug/power/bindings/c++/power.inl
+    include/glug/power/bindings/c++/power_supply.hpp
+    include/glug/power/bindings/c++/battery_status.hpp
 )

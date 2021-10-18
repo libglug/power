@@ -1,7 +1,7 @@
 #ifndef GLUG_POWER_SUPPLY_H
 #define GLUG_POWER_SUPPLY_H
 
-enum glug_power_supply
+enum glug_power_supply_type
 {
     glug_power_unknown = -1,
     glug_power_none,
@@ -11,7 +11,7 @@ enum glug_power_supply
 };
 
 #ifdef GLUG_USE_TYPEDEFS
-    typedef enum glug_power_supply glug_power_supply_t;
+    typedef enum glug_power_supply_type glug_power_supply_type_t;
 #endif
 
 #endif // GLUG_POWER_SUPPLY_H
