@@ -33,7 +33,7 @@ static void test_has_ac(void)
 
 static void test_power_supply(void)
 {
-    enum glug_power_supply supply;
+    enum glug_power_supply_type supply;
 
     // has A/C => A/C
     set_ac(glug_true);

@@ -12,7 +12,7 @@ glug_bool_t glug_power_has_ac(void)
     return has_ac();
 }
 
-enum glug_power_supply glug_power_active_supply(void)
+enum glug_power_supply_type glug_power_active_supply(void)
 {
     if (has_ac()) return glug_power_ac;
 
