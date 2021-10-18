@@ -7,9 +7,14 @@
 #include <glug/bool_t.h>
 #include "battery_state_t.h"
 
+glug_bool_t glug_power_has_ac(void)
+{
+    return has_ac();
+}
+
 enum glug_power_supply glug_power_active_supply(void)
 {
-    if (has_ac())            return glug_power_ac;
+    if (has_ac()) return glug_power_ac;
 
     size_t nbatts;
     battery_count(&nbatts);
