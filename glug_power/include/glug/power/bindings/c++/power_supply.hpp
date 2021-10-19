@@ -12,7 +12,7 @@ namespace priv
 #include <glug/power/power_supply.h>
 } // namespace priv
 
-struct supply
+namespace supply
 {
     enum type
     {
@@ -22,8 +22,7 @@ struct supply
         battery = priv::glug_power_battery,
         ups     = priv::glug_power_ups,
     };
-};
-
+} // namespace supply
 
 } // namespace power
 

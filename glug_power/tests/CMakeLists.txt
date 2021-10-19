@@ -83,6 +83,7 @@ list(
     TEST_TARGETS
 )
 
+add_test_by_conf(system_power_status.cmake)
 add_test_by_conf(sysctl.cmake)
 add_test_by_conf(bridge-win.cmake)
 add_test_by_conf(bridge-bsd.cmake)
