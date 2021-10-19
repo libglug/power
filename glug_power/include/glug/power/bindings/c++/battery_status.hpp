@@ -12,7 +12,7 @@ namespace priv
 #include <glug/power/battery_status.h>
 } // namespace priv
 
-struct battery
+namespace battery
 {
     enum status
     {
@@ -22,7 +22,7 @@ struct battery
         charging    = priv::glug_battery_charging,
         charged     = priv::glug_battery_charged,
     };
-};
+} // namespace battery
 
 } // namespace power
 
