@@ -18,6 +18,7 @@ GLUG_LIB_LOCAL glug_bool_t ac_connected(void);
 GLUG_LIB_LOCAL glug_bool_t battery_connected(void);
 
 GLUG_LIB_LOCAL enum charge_state battery_charge_state(void);
+GLUG_LIB_LOCAL int8_t   battery_flag(void);
 GLUG_LIB_LOCAL int8_t   battery_life_percent(void);
 GLUG_LIB_LOCAL int32_t  battery_life_time(void);
 

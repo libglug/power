@@ -31,6 +31,15 @@ enum charge_state battery_charge_state()
     return cs_unknown;
 }
 
+int8_t battery_flag(void)
+{
+    SYSTEM_POWER_STATUS ps;
+    GetSystemPowerStatus(&ps);
+
+    return ps.BatteryFlag;
+}
+
+
 int8_t battery_life_percent(void)
 {
     SYSTEM_POWER_STATUS ps;
