@@ -1,57 +1,46 @@
 #include "system_power_status.h"
 
-static glug_bool_t AC = glug_true;
-void set_ac_connected(glug_bool_t ac)
+static enum ac_line_state AC_LINE_STATE = ac_online;
+void set_ac_line_status(enum ac_line_state state)
 {
-    AC = ac;
+    AC_LINE_STATE = state;
 }
 
-glug_bool_t ac_connected(void)
+enum ac_line_state ac_line_status(void)
 {
-    return AC;
+    return AC_LINE_STATE;
 }
 
-
-static glug_bool_t BATT = glug_false;
-void set_battery_connected(glug_bool_t batt)
+static enum battery_flag BATTERY_FLAGS = bf_none;
+void set_battery_flag(enum battery_flag flags)
 {
-    BATT = batt;
+    BATTERY_FLAGS = flags;
 }
 
-glug_bool_t battery_connected(void)
+enum battery_flag battery_flag(void)
 {
-    return BATT;
+    return BATTERY_FLAGS;
 }
 
-static enum charge_state CHARGE_STATE = cs_none;
-void set_charge_state(enum charge_state state)
+static int8_t BATTERY_CHARGE = 0;
+void set_battery_percent(int8_t pct)
 {
-    CHARGE_STATE = state;
-}
-
-enum charge_state battery_charge_state(void)
-{
-    return CHARGE_STATE;
-}
-
-static int8_t BATT_LEVEL = -1;
-void set_battery_life(int8_t level)
-{
-    BATT_LEVEL = level;
+    BATTERY_CHARGE = pct;
 }
 
 int8_t battery_life_percent(void)
 {
-    return BATT_LEVEL;
+    return BATTERY_CHARGE;
 }
 
-static int32_t BATT_TIME = -1;
+static int32_t BATTERY_TIME = 0;
 void set_battery_time(int32_t time)
 {
-    BATT_TIME = time;
+    BATTERY_TIME = time;
 }
 
 int32_t battery_life_time(void)
 {
-    return BATT_TIME;
+    return BATTERY_TIME;
 }
+

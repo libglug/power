@@ -25,7 +25,7 @@ enum glug_power_supply_type glug_power_active_supply(void)
 
 enum glug_battery_status glug_power_battery_state(void)
 {
-    struct battery_state batteries;
+    struct battery_state batteries = {0, 0, 0};
     battery_state(&batteries);
 
     enum glug_battery_status status = glug_battery_unknown;

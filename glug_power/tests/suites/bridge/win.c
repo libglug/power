@@ -8,11 +8,13 @@
 #include <src/battery_state_t.h>
 #include <src/power_bridge.h>
 
+#include <glug/bool_t.h>
+
 static void before_each(void)
 {
-    set_ac_connected(glug_true);
-    set_battery_connected(glug_false);
-    set_battery_life(-1);
+    set_ac_line_status(ac_online);
+    set_battery_flag(bf_none);
+    set_battery_percent(-1);
     set_battery_time(-1);
 }
 
@@ -21,12 +23,12 @@ static void test_has_ac(void)
     glug_bool_t ac = glug_false;
 
     // connected
-    set_ac_connected(glug_true);
+    set_ac_line_status(ac_online);
     ac = has_ac();
     CU_ASSERT(ac);
 
     // disconnected
-    set_ac_connected(glug_false);
+    set_ac_line_status(ac_offline);
     ac = has_ac();
     CU_ASSERT(!ac);
 }
@@ -36,12 +38,12 @@ static void test_battery_count(void)
     size_t count = 0;
 
     // has batteries
-    set_battery_connected(glug_true);
+    set_battery_flag(bf_high);
     battery_count(&count);
     CU_ASSERT_EQUAL(count, 1);
 
     // no batteries
-    set_battery_connected(glug_false);
+    set_battery_flag(bf_none);
     battery_count(&count);
     CU_ASSERT_EQUAL(count, 0);
 }
@@ -51,27 +53,28 @@ static void test_battery_state(void)
     struct battery_state state;
 
     // no batteries
-    set_charge_state(cs_none);
+    set_battery_flag(bf_none);
     battery_state(&state);
     assert_battery_state_equal(&state, &(struct battery_state){ 0, 0, 0 });
 
     // unknown batteries
-    set_charge_state(cs_unknown);
+    set_battery_flag(bf_unknown);
     battery_state(&state);
     assert_battery_state_equal(&state, &(struct battery_state){ 0, 0, 0 });
 
     // charged battery
-    set_charge_state(cs_charged);
+    set_battery_flag(1);
     battery_state(&state);
     assert_battery_state_equal(&state, &(struct battery_state){ 1, 0, 1 });
 
     // charging battery
-    set_charge_state(cs_charging);
+    set_battery_flag(bf_charging);
     battery_state(&state);
     assert_battery_state_equal(&state, &(struct battery_state){ 1, 1, 0 });
 
-    // cdisharging battery
-    set_charge_state(cs_discharging);
+    // disharging battery
+    set_ac_line_status(ac_offline);
+    set_battery_flag(bf_high);
     battery_state(&state);
     assert_battery_state_equal(&state, &(struct battery_state){ 1, 0, 0 });
 }
@@ -81,12 +84,12 @@ static void test_battery_level(void)
     int8_t level, expected;
 
     expected = 99;
-    set_battery_life(expected);
+    set_battery_percent(expected);
     level = battery_level();
     CU_ASSERT_EQUAL(level, expected);
 
     expected = -1;
-    set_battery_life(expected);
+    set_battery_percent(expected);
     level = battery_level();
     CU_ASSERT_EQUAL(level, expected);
 }

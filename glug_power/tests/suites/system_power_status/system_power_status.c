@@ -16,86 +16,55 @@ static void before_each(void)
 
 static void test_ac_connected(void)
 {
-    glug_bool_t ac;
+    enum ac_line_state ac;
 
     set_ac_status(AC_LINE_ONLINE);
-    ac = ac_connected();
-    CU_ASSERT(ac);
+    ac = ac_line_status();
+    CU_ASSERT_EQUAL(ac, ac_online);
 
     set_ac_status(AC_LINE_OFFLINE);
-    ac = ac_connected();
-    CU_ASSERT(!ac);
+    ac = ac_line_status();
+    CU_ASSERT_EQUAL(ac, ac_offline);
 
     set_ac_status(AC_LINE_UNKNOWN);
-    ac = ac_connected();
-    CU_ASSERT(!ac);
-
-    // TODO: AC_LINE_BACKUP_POWER
-}
-
-static void test_battery_connected(void)
-{
-    glug_bool_t batt;
-
-    set_battery_flag(BATTERY_FLAG_NO_BATTERY);
-    batt = battery_connected();
-    CU_ASSERT(!batt);
-
-    set_battery_flag(BATTERY_FLAG_UNKNOWN);
-    batt = battery_connected();
-    CU_ASSERT(!batt);
-
-    set_battery_flag(BATTERY_FLAG_HIGH);
-    batt = battery_connected();
-    CU_ASSERT(batt);
-
-    set_battery_flag(BATTERY_FLAG_LOW);
-    batt = battery_connected();
-    CU_ASSERT(batt);
-
-    set_battery_flag(BATTERY_FLAG_CRITICAL);
-    batt = battery_connected();
-    CU_ASSERT(batt);
-
-    set_battery_flag(BATTERY_FLAG_LOW | BATTERY_FLAG_CHARGING);
-    batt = battery_connected();
-    CU_ASSERT(batt);
+    ac = ac_line_status();
+    CU_ASSERT_EQUAL(ac, ac_unknown);
 }
 
 static void test_battery_charge_state(void)
 {
-    enum charge_state state;
+    enum battery_flag flags;
     set_ac_status(AC_LINE_OFFLINE);
 
     set_battery_flag(BATTERY_FLAG_NO_BATTERY);
-    state = battery_charge_state();
-    CU_ASSERT_EQUAL(state, cs_none);
+    flags = battery_flag();
+    CU_ASSERT_EQUAL(flags, bf_none);
 
     set_battery_flag(BATTERY_FLAG_UNKNOWN);
-    state = battery_charge_state();
-    CU_ASSERT_EQUAL(state, cs_none);
+    flags = battery_flag();
+    CU_ASSERT_EQUAL(flags, bf_unknown);
 
     // TODO ...
 //    set_battery_flag(BATTERY_FLAG_HIGH);
 //    state = battery_charge_state();
-//    CU_ASSERT_EQUAL(state, cs_discharging);
+//    CU_ASSERT(state & bf_high);
 
 //    set_battery_flag(BATTERY_FLAG_LOW);
 //    state = battery_charge_state();
-//    CU_ASSERT_EQUAL(state, cs_discharging);
+//    CU_ASSERT(state & bf_low);
 
 //    set_battery_flag(BATTERY_FLAG_CRITICAL);
 //    state = battery_charge_state();
-//    CU_ASSERT_EQUAL(state, cs_discharging);
+//    CU_ASSERT(state & bf_critical);
 
     set_ac_status(AC_LINE_ONLINE);
     set_battery_flag(BATTERY_FLAG_LOW | BATTERY_FLAG_CHARGING);
-    state = battery_charge_state();
-    CU_ASSERT_EQUAL(state, cs_charging);
+    flags = battery_flag();
+    CU_ASSERT(flags & bf_charging);
 
     set_battery_flag(BATTERY_FLAG_HIGH);
-    state = battery_charge_state();
-    CU_ASSERT_EQUAL(state, cs_charged);
+    flags = battery_flag();
+    CU_ASSERT(flags & bf_high);
 }
 
 static void test_battery_life_percent(void)
@@ -144,7 +113,6 @@ int main(void)
     if (!suite) return CU_get_error();
 
     CU_add_test(suite, "A/C connected", test_ac_connected);
-    CU_add_test(suite, "battery connected", test_battery_connected);
     CU_add_test(suite, "battery state", test_battery_charge_state);
     CU_add_test(suite, "battery life", test_battery_life_percent);
     CU_add_test(suite, "battery time", test_battery_life_time);

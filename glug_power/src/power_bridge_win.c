@@ -7,21 +7,22 @@
 
 glug_bool_t has_ac(void)
 {
-    return ac_connected();
+    return ac_line_status() == ac_online;
 }
 
 void battery_count(size_t *count)
 {
-    *count = battery_connected();
+    uint8_t flags = battery_flag();
+    *count = !(flags == bf_unknown || flags & bf_none);
 }
 
 void battery_state(struct battery_state *state)
 {
-    enum charge_state charge_state = battery_charge_state();
+    uint8_t flags = battery_flag();
 
-    state->count = charge_state != cs_unknown && charge_state != cs_none;
-    state->ncharged = charge_state == cs_charged;
-    state->ncharging = charge_state == cs_charging;
+    state->count = flags != bf_unknown && flags != bf_none;
+    state->ncharging = state->count && flags == bf_charging;
+    state->ncharged = state->count && flags != bf_charging;
 }
 
 int8_t battery_level(void)

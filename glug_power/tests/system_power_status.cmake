@@ -12,8 +12,7 @@ list(
     APPEND
     TEST_LIB_SOURCE
     system_power_status/system_power_status.h
-    system_power_status/ac.c
-    system_power_status/battery.c
+    system_power_status/system_power_status.c
 )
 
 list(
